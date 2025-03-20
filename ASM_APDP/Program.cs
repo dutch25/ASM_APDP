@@ -15,7 +15,8 @@ namespace ASM_APDP
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddDistributedMemoryCache();
-            
+            builder.Services.AddSession();
+
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -45,7 +46,7 @@ namespace ASM_APDP
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=User}/{action=Index}/{id?}");
 
             app.Run();
         }

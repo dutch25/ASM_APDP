@@ -9,5 +9,6 @@ namespace ASM_APDP.Facades
         IEnumerable<User> GetAllUsers();
         User UpdateUser(User user);
         int DeleteUser(int id);
+
     }
 }

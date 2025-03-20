@@ -44,5 +44,29 @@ namespace ASM_APDP.Controllers
                 return View(null);
             }
         }
+
+        [HttpPost]
+        public IActionResult LoginUser(User user)
+        {
+            try
+            {
+                var _user = _userFacade.GetAllUsers().FirstOrDefault(u => u.Username == user.Username && u.Password == user.Password); ;
+                if(_user != null)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid username or password");
+                    return View("~/Views/Home/Login.cshtml", null);
+                }
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError(string.Empty, "An Error Occurred While Processing Your Request.");
+                return View("~/Views/Home/Login.cshtml", null);
+            }
+            
+        }
     }
 }

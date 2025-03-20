@@ -1,4 +1,5 @@
 ﻿namespace ASM_APDP.Middleware
+
 {
     public class AuthenticationMiddleware
     {
