@@ -47,7 +47,14 @@ namespace ASM_APDP.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            return View("~/Views/Home/Login.cshtml");
+            try
+            {
+                return View("~/Views/Home/Login.cshtml");
+            }
+            catch(Exception e)
+            {
+                return View(null);
+            }
         }
     }
 }
