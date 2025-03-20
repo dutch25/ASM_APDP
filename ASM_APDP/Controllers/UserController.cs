@@ -37,7 +37,19 @@ namespace ASM_APDP.Controllers
             try
             {
                 var users = _userFacade.GetAllUsers();
-                return View("~/View/Home/Login.cshtml");
+                return View("~/Views/Home/Index.cshtml");
+            }
+            catch(Exception e)
+            {
+                return View(null);
+            }
+        }
+        [HttpGet]
+        public IActionResult Login()
+        {
+            try
+            {
+                return View("~/Views/Home/Login.cshtml");
             }
             catch(Exception e)
             {

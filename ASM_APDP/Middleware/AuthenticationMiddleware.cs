@@ -11,12 +11,20 @@
 
         public async Task Invoke(HttpContext context)
         {
-            if(context.Request.Path == "/" || context.Request.Path == "/Home/Index")
+            // Allow access to the Index page without authentication
+            if (context.Request.Path == "/" || context.Request.Path == "/Home/Index" || context.Request.Path == "/User/Index" || context.Request.Path == "/User/Login" || context.Request.Path == "/User/Register")
             {
-                if (string.IsNullOrEmpty(context.Session.GetString("username"))) { 
-                    context.Response.Redirect("/User/Login");
-                }
+                await _next(context);
+                return;
             }
+
+            // Redirect to the login page if not authenticated
+            if (string.IsNullOrEmpty(context.Session.GetString("username")))
+            {
+                context.Response.Redirect("/User/Login");
+                return;
+            }
+
             await _next(context);
         }
     }

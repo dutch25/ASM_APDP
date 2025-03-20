@@ -1,5 +1,50 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model ASM_APDP.Models.User
+
 @{
+    Layout = null;
 }
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Andev Web</title>
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true">
+</head>
+
+<body>
+    <div class="wrapper">
+        <form asp-controller="User" asp-action="Login" method="post">
+            @Html.AntiForgeryToken()
+            <h2>Login Form</h2>
+
+            <div class="input-field">
+                <input asp-for="Email" type="email" required>
+                <label asp-for="Email">Enter your email</label>
+            </div>
+
+            <div class="input-field">
+                <input asp-for="Password" type="password" required>
+                <label asp-for="Password">Enter your password</label>
+            </div>
+
+            <div class="forget">
+                <label for="remember">
+                    <input type="checkbox" id="remember">
+                    <p>Remember me</p>
+                </label>
+                <a href="#">Forgot password?</a>
+            </div>
+
+            <button type="submit">Log In</button>
+
+            <div class="register">
+                <p>Don't have an account? <a asp-controller="User" asp-action="Register">Register</a></p>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
