@@ -67,6 +67,7 @@ namespace ASM_APDP.Facades
                     Email = email,
                     RoleId = role.Id,
                     CreateDate = DateTime.Now
+                    
                 };
                 var result = _userRepository.Create(user);
                 if (result == 0)
