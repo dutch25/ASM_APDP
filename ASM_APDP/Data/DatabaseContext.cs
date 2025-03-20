@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ASM_APDP.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ASM_APDP.Data
 {
@@ -10,5 +11,9 @@ namespace ASM_APDP.Data
         }
         public DbSet<Models.Role> Roles { get; set; }
         public DbSet<Models.User> Users { get; set; }
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<Class> Classes { get; set; }
+        public DbSet<Mark> Marks { get; set; }
+
     }
 }
