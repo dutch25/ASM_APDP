@@ -15,6 +15,10 @@ namespace ASM_APDP.Models
         public string Password { get; set; }
         [Required]
         [StringLength(50)]
+
+        public string ConfirmPassword { get; set; }
+        [Required]
+        [StringLength(50)]
         public string Email { get; set; }
         [Required]
         public int RoleId { get; set; }
