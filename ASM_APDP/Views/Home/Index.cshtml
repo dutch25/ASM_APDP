@@ -1,10 +1,27 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<!DOCTYPE <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>
+        @ViewData["Title"] - Applied Programming and Design Principles
+	    </title>
+		<style>
+		body {
+			background-image: url("https://www.google.com/url?sa=i&url=https%3A%2F%2Fcellphones.com.vn%2Fsforum%2Fhinh-nen-thien-nhien&psig=AOvVaw0zSwKkWM5sk9LWPUwpvuoQ&ust=1742541069947000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCIijkL6NmIwDFQAAAAAdAAAAABAE");
+			background-size: cover;
+			background-repeat: no-repeat;
+			background-attachment: fixed;
+		}
+		</style>
+        </head>
+    <body>
+	<div class="text-center">
+		<h1 class="display-4">Welcome to Our Project</h1>
+		<p>Applied Programming and Design Principles</p>
+		<a asp-controller="User" asp-action="Register" class="btn btn-success">Register Account</a>
+		<a asp-controller="User" asp-action="Login" class="btn btn-warning">Login Account</a>
+	</div>
+    </body>
+</html>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome SUC VAT DAT</h1>
-    <p>Le nhe it thoi</p>
-    <a asp-controller="User" asp-action="Register" class="btn btn-success">Register Account</a>
-    <a asp-controller="User" asp-action="Login" class="btn btn-warning">Login Account</a>
-</div>
