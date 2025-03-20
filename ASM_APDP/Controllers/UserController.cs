@@ -28,7 +28,7 @@ namespace ASM_APDP.Controllers
         [HttpGet]
         public IActionResult RegisterUser()
         {
-            return View("~/Views/Home/Register.cshtml", null);
+            return View("~/Views/Home/Register.cshtml");
         }
 
         [HttpGet]
