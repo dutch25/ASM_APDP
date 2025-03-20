@@ -11,7 +11,7 @@
         public async Task Invoke(HttpContext context)
         {
             // Allow access to the Index page without authentication
-            if (context.Request.Path == "/" || context.Request.Path == "/Home/Index" || context.Request.Path == "/User/Index" || context.Request.Path == "/User/Login" || context.Request.Path == "/User/Register")
+            if (context.Request.Path == "/" || context.Request.Path == "/Home/Index" || context.Request.Path == "/User/Index" || context.Request.Path == "/User/Login" || context.Request.Path == "/User/RegisterUser")
             {
                 await _next(context);
                 return;
