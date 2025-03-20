@@ -16,9 +16,7 @@ namespace ASM_APDP.Models
         [Required]
         [StringLength(50)]
 
-        public string ConfirmPassword { get; set; }
-        [Required]
-        [StringLength(50)]
+        public DateTime? DoB { get; set; }
         public string Email { get; set; }
         [Required]
         public int RoleId { get; set; }
