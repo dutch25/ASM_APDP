@@ -14,6 +14,14 @@ namespace ASM_APDP.Data
         public DbSet<Course> Courses { get; set; }
         public DbSet<Class> Classes { get; set; }
         public DbSet<Mark> Marks { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
 
+            // Specify the column type for the Grade property
+            modelBuilder.Entity<Mark>()
+                .Property(m => m.Grade)
+                .HasColumnType("decimal(5, 2)");
+        }
     }
 }
