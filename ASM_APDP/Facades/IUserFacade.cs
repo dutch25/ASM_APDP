@@ -4,10 +4,11 @@ namespace ASM_APDP.Facades
 {
     public interface IUserFacade
     {
-        User RegisterUser(string username, string password, string email);
-        User getUserByID(int id);
         IEnumerable<User> GetAllUsers();
-        User UpdateUser(User user);
-        int DeleteUser(int id);
+        User GetUserById(int id);
+        User GetUserByEmailAndPassword(string email, string password);
+        bool RegisterUser(User user);
+        bool UpdateUser(User user);
+        bool DeleteUser(int id);
     }
 }

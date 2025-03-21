@@ -10,67 +10,87 @@ namespace ASM_APDP.Repositories
         {
             _context = context;
         }
-        int IUserRepository.Create(User user)
+        public bool CreateUser(User user)
         {
             try
             {
                 _context.Users.Add(user);
-                return _context.SaveChanges();
+                _context.SaveChanges();
+                return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return 0;
+                return false;
             }
         }
 
-        int IUserRepository.Delete(int id)
+        public bool DeleteUser(int id)
         {
             try
             {
                 var user = _context.Users.Find(id);
-                _context.Users.Remove(user);
-                return _context.SaveChanges();
+                if (user != null)
+                {
+                    _context.Users.Remove(user);
+                    _context.SaveChanges();
+                    return true;
+                }
+                return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return 0;
+                return false;
             }
         }
 
-        IEnumerable<User> IUserRepository.GetAll()
+        public IEnumerable<User> GetAllUsers()
         {
             try
             {
                 return _context.Users.ToList();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return null;
+                return Enumerable.Empty<User>(); // null
             }
         }
 
-        User IUserRepository.getUserById(int id)
+        public User GetUserById(int id)
         {
             try
             {
                 return _context.Users.Find(id);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return null;
             }
         }
 
-        int IUserRepository.Update(User user)
+        public User GetUserByUsernameAndPassword(string username, string password)
+        {
+            try
+            {
+
+                return _context.Users.FirstOrDefault(u => u.Email == username && u.Password == password);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public bool UpdateUser(User user)
         {
             try
             {
                 _context.Users.Update(user);
-                return _context.SaveChanges();
+                _context.SaveChanges();
+                return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return 0;
+                return false;
             }
         }
     }
