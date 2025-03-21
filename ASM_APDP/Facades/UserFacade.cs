@@ -5,97 +5,41 @@ namespace ASM_APDP.Facades
 {
     public class UserFacade : IUserFacade
     {
-        private const string DEFAULT_ROLE = "User"; // Assuming a default role name
         private readonly IUserRepository _userRepository;
-        private readonly IRoleRepository _roleRepository;
 
-        public UserFacade(IUserRepository userRepository, IRoleRepository roleRepository)
+        public UserFacade(IUserRepository userRepository)
         {
             _userRepository = userRepository;
-            _roleRepository = roleRepository;
         }
 
-        int IUserFacade.DeleteUser(int id)
+        public IEnumerable<User> GetAllUsers()
         {
-            try
-            {
-                return _userRepository.Delete(id);
-            }
-            catch (Exception)
-            {
-                return 0;
-            }
+            return _userRepository.GetAllUsers();
         }
 
-        IEnumerable<User> IUserFacade.GetAllUsers()
+        public User GetUserById(int id)
         {
-            try
-            {
-                return _userRepository.GetAll();
-            }
-            catch (Exception)
-            {
-                return new List<User>();
-            }
+            return _userRepository.GetUserById(id);
         }
 
-        User IUserFacade.getUserByID(int id)
+        public User GetUserByEmailAndPassword(string username, string password)
         {
-            try
-            {
-                return _userRepository.getUserById(id);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return _userRepository.GetUserByUsernameAndPassword(username, password);
         }
 
-        User IUserFacade.RegisterUser(string username, string password, string email)
+        public bool RegisterUser(User user)
         {
-            try
-            {
-                var role = _roleRepository.GetRoleByName(DEFAULT_ROLE);
-                if (role == null)
-                {
-                    return null;
-                }
-                var user = new User
-                {
-                    FullName = username,
-                    Password = password,
-                    Email = email,
-                    RoleId = role.Id,
-                    CreateDate = DateTime.Now
-                };
-                var result = _userRepository.Create(user);
-                if (result == 0)
-                {
-                    return null;
-                }
-                return user;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return _userRepository.CreateUser(user);
         }
 
-        User IUserFacade.UpdateUser(User user)
+        public bool UpdateUser(User user)
         {
-            try
-            {
-                var result = _userRepository.Update(user);
-                if (result == 0)
-                {
-                    return null;
-                }
-                return user;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return _userRepository.UpdateUser(user);
+        }
+
+        public bool DeleteUser(int id)
+        {
+            return _userRepository.DeleteUser(id);
         }
     }
 }

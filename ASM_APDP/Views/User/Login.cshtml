@@ -21,8 +21,8 @@
             <h2>Login Form</h2>
 
             <div class="input-field">
-                <input asp-for="Email" type="email" required>
-                <label asp-for="Email">Enter your email</label>
+                <input asp-for="Username" type="username" required>
+                <label asp-for="Username">Enter your Username</label>
             </div>
 
             <div class="input-field">
@@ -41,7 +41,7 @@
             <button type="submit">Log In</button>
 
             <div class="register">
-                <p>Don't have an account? <a asp-controller="User" asp-action="RegisterUser">Register</a></p>
+                <p>Don't have an account? <a asp-controller="User" asp-action="Register">Register</a></p>
             </div>
         </form>
     </div>

@@ -1,60 +1,65 @@
-﻿using ASM_APDP.Facades;
+﻿using System.ComponentModel.DataAnnotations;
+using ASM_APDP.Facades;
 using ASM_APDP.Models;
+using ASM_APDP.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ASM_APDP.Controllers
 {
     public class UserController : Controller
     {
-        private readonly IUserFacade _userFacade;
-        public UserController(IUserFacade userFacade)
+        private readonly IUserRepository _userRepository;
+
+        public UserController(IUserRepository userRepository)
         {
-            _userFacade = userFacade;
+            _userRepository = userRepository;
         }
-        [HttpPost]
-        public IActionResult RegisterUser(User user)
+
+        public ActionResult Index()
         {
-            try
-            {
-                var _user = _userFacade.RegisterUser(user.FullName, user.Password, user.Email);
-                return View("~/Views/User/Register.cshtml", _user);
-            }
-            catch (Exception e)
-            {
-                return View("~/Views/User/Register.cshtml", null);
-            }   
-            
-        }
-        [HttpGet]
-        public IActionResult RegisterUser()
-        {
-            return View("~/Views/User/Register.cshtml");
+            return View();
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public ActionResult Login()
         {
-            try
-            {
-                var users = _userFacade.GetAllUsers();
-                return View("~/Views/Home/Index.cshtml");
-            }
-            catch(Exception e)
-            {
-                return View(null);
-            }
+            return View();
         }
-        [HttpGet]
-        public IActionResult Login()
+
+        [HttpPost]
+        public ActionResult Login(User user)
         {
-            try
+            string username = user.Username;
+            string password = user.Password;
+
+            var _user = _userRepository.GetUserByUsernameAndPassword(username, password);
+            
+            if (_user != null)
             {
-                return View("~/Views/User/Login.cshtml");
+                ViewBag.Username = _user.Email;
+                ViewBag.IsLogin = true;
+                HttpContext.Session.SetString("Username", username );
+                HttpContext.Session.SetString("Fullname", _user.Username);
+                HttpContext.Session.SetInt32("IsLogin", 1);
             }
-            catch(Exception e)
-            {
-                return View(null);
-            }
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Logout()
+        {
+
+            HttpContext.Session.Remove("Username");
+            HttpContext.Session.Remove("Fullname");
+            HttpContext.Session.Remove("IsLogin");
+
+            return View("User/Login");
+        }
+
+        [HttpGet]
+        public ActionResult Register()
+        {
+            return View();
         }
     }
 }
