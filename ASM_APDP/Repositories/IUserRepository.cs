@@ -4,12 +4,16 @@ namespace ASM_APDP.Repositories
 {
     public interface IUserRepository
     {
-        IEnumerable<User> GetAll();
-        User getUserById(int id);
+        IEnumerable<User> GetAllUsers();
 
-        int Create(User user);
-        int Update(User user);
+        User GetUserById(int id);
 
-        int Delete(int id);
+        User GetUserByUsernameAndPassword(string username, string password);
+
+        bool CreateUser(User user);
+
+        bool UpdateUser(User user);
+
+        bool DeleteUser(int id);
     }
 }

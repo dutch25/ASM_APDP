@@ -11,7 +11,7 @@ namespace ASM_APDP.Models
 
         [Required]
         [StringLength(50)]
-        public string FullName { get; set; }
+        public string Username { get; set; }
 
         [Required]
         [StringLength(255)]
