@@ -62,7 +62,7 @@ namespace ASM_APDP.Facades
                 }
                 var user = new User
                 {
-                    Username = username,
+                    FullName = username,
                     Password = password,
                     Email = email,
                     RoleId = role.Id,

@@ -1,30 +1,26 @@
 ﻿namespace ASM_APDP.Middleware
 {
-    public class AuthenticationMiddleware
+    public class AuthMiddleware
     {
         private readonly RequestDelegate _next;
-        public AuthenticationMiddleware(RequestDelegate next)
+
+        public AuthMiddleware(RequestDelegate next)
         {
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
-            // Allow access to the Index page without authentication
-            if (context.Request.Path == "/" || context.Request.Path == "/Home/Index" || context.Request.Path == "/User/Index" || context.Request.Path == "/User/Login" || context.Request.Path == "/User/RegisterUser")
-            {
-                await _next(context);
-                return;
-            }
-
-            // Redirect to the login page if not authenticated
-            if (string.IsNullOrEmpty(context.Session.GetString("username")))
+            if ((context.Session.GetInt32("IsLogin") != 1 || context.Session.GetString("Username") == ""
+                || context.Session.GetString("Username") == null || context.Session.GetInt32("IsLogin") == null)
+                && !context.Request.Path.StartsWithSegments("/User"))
             {
                 context.Response.Redirect("/User/Login");
-                return;
             }
-
-            await _next(context);
+            else
+            {
+                await _next(context);
+            }
         }
     }
 }

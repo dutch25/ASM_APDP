@@ -42,7 +42,7 @@ namespace ASM_APDP
 
             app.UseAuthorization();
             app.UseSession();
-            app.UseMiddleware<AuthenticationMiddleware>();
+            app.UseMiddleware<AuthMiddleware>();
 
             app.MapControllerRoute(
                 name: "default",
