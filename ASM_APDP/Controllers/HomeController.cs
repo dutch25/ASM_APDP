@@ -1,6 +1,6 @@
 using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 using ASM_APDP.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ASM_APDP.Controllers;
 
@@ -15,6 +15,12 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        ViewBag.IsLogin = 0;
+        if (HttpContext.Session.GetInt32("IsLogin") == 1 && HttpContext.Session.GetString("Fullname") != null)
+        {
+            ViewBag.Fullname = HttpContext.Session.GetString("Fullname");
+            ViewBag.IsLogin = 1;
+        }
         return View();
     }
 

@@ -21,8 +21,8 @@
             <h2>Register Form</h2>
 
             <div class="input-field">
-                <input asp-for="Username" type="text" required>
-                <label asp-for="Username">Enter your username</label>
+                <input asp-for="FullName" type="text" required>
+                <label asp-for="FullName">Enter your username</label>
             </div>
 
             <div class="input-field">
@@ -38,6 +38,10 @@
             <div class="input-field">
                 <input asp-for="Password" type="password" required>
                 <label asp-for="Password">Confirm your password</label>
+            </div>
+
+            <div class="input-field">
+                <input asp-for="DoB" type="date" required placeholder="Date of Birth">
             </div>
 
             <button type="submit">Register</button>

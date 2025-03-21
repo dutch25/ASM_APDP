@@ -16,7 +16,7 @@ namespace ASM_APDP.Controllers
         {
             try
             {
-                var _user = _userFacade.RegisterUser(user.Username, user.Password, user.Email);
+                var _user = _userFacade.RegisterUser(user.FullName, user.Password, user.Email);
                 return View("~/Views/Home/Register.cshtml", _user);
             }
             catch (Exception e)
