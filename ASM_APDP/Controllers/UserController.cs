@@ -17,18 +17,18 @@ namespace ASM_APDP.Controllers
             try
             {
                 var _user = _userFacade.RegisterUser(user.FullName, user.Password, user.Email);
-                return View("~/Views/Home/Register.cshtml", _user);
+                return View("~/Views/User/Register.cshtml", _user);
             }
             catch (Exception e)
             {
-                return View("~/Views/Home/Register.cshtml", null);
+                return View("~/Views/User/Register.cshtml", null);
             }   
             
         }
         [HttpGet]
         public IActionResult RegisterUser()
         {
-            return View("~/Views/Home/Register.cshtml");
+            return View("~/Views/User/Register.cshtml");
         }
 
         [HttpGet]
@@ -49,7 +49,7 @@ namespace ASM_APDP.Controllers
         {
             try
             {
-                return View("~/Views/Home/Login.cshtml");
+                return View("~/Views/User/Login.cshtml");
             }
             catch(Exception e)
             {
