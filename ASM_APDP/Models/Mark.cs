@@ -14,6 +14,7 @@ namespace ASM_APDP.Models
         [ForeignKey("Course")]
         public int CourseID { get; set; }
 
+        [Column(TypeName = "decimal(5, 2)")]
         public decimal Grade { get; set; }
 
         public virtual User User { get; set; }

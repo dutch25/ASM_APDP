@@ -36,13 +36,13 @@ namespace ASM_APDP.Controllers
             
             if (_user != null)
             {
-                ViewBag.Username = _user.Email;
+                ViewBag.Username = _user.Username;
                 ViewBag.IsLogin = true;
                 HttpContext.Session.SetString("Username", username );
-                HttpContext.Session.SetString("Fullname", _user.Username);
+                HttpContext.Session.SetString("Email", _user.Email);
                 HttpContext.Session.SetInt32("IsLogin", 1);
             }
-            return View();
+            return View("~/Views/Home/Index.cshtml");
         }
 
         [HttpPost]
@@ -50,7 +50,7 @@ namespace ASM_APDP.Controllers
         {
 
             HttpContext.Session.Remove("Username");
-            HttpContext.Session.Remove("Fullname");
+            HttpContext.Session.Remove("Email");
             HttpContext.Session.Remove("IsLogin");
 
             return View("User/Login");
