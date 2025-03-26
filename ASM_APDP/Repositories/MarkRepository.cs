@@ -1,5 +1,8 @@
 ﻿using ASM_APDP.Data;
 using ASM_APDP.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ASM_APDP.Repositories
 {
@@ -25,18 +28,13 @@ namespace ASM_APDP.Repositories
             }
         }
 
-<<<<<<< HEAD
         bool IMarkRepository.Delete(int id)
-=======
-        int IMarkRepository.Delete(int id)
->>>>>>> ecc12143217cf909f84561c428e053417049b324
         {
             try
             {
                 var mark = _context.Marks.Find(id);
                 if (mark == null)
                 {
-<<<<<<< HEAD
                     return false;
                 }
                 _context.Marks.Remove(mark);
@@ -45,16 +43,6 @@ namespace ASM_APDP.Repositories
             catch (Exception)
             {
                 return false;
-=======
-                    return 0;
-                }
-                _context.Marks.Remove(mark);
-                return _context.SaveChanges();
-            }
-            catch (Exception)
-            {
-                return 0;
->>>>>>> ecc12143217cf909f84561c428e053417049b324
             }
         }
 
@@ -106,16 +94,11 @@ namespace ASM_APDP.Repositories
             }
         }
 
-<<<<<<< HEAD
         bool IMarkRepository.Grade(Mark mark)
-=======
-        int IMarkRepository.Grade(Mark mark)
->>>>>>> ecc12143217cf909f84561c428e053417049b324
         {
             try
             {
                 _context.Marks.Update(mark);
-<<<<<<< HEAD
                 return _context.SaveChanges() > 0;
             }
             catch (Exception)
@@ -134,13 +117,6 @@ namespace ASM_APDP.Repositories
             catch (Exception)
             {
                 return false;
-=======
-                return _context.SaveChanges();
-            }
-            catch (Exception)
-            {
-                return 0;
->>>>>>> ecc12143217cf909f84561c428e053417049b324
             }
         }
     }
