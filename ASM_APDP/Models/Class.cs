@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ASM_APDP.Models
@@ -12,13 +13,14 @@ namespace ASM_APDP.Models
         [StringLength(100)]
         public string ClassName { get; set; }
 
-        [ForeignKey("User")]
+        // Cho phép UserID nullable để tránh lỗi khi User bị xóa
         public int? UserID { get; set; }
-
-        [ForeignKey("Course")]
         public int CourseID { get; set; }
 
+        [ForeignKey("UserID")]
         public virtual User User { get; set; }
+
+        [ForeignKey("CourseID")]
         public virtual Course Course { get; set; }
     }
 }

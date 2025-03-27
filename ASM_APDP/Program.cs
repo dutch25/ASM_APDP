@@ -1,8 +1,7 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using ASM_APDP.Data;
-using ASM_APDP.Facades;
-using ASM_APDP.Middleware;
-using ASM_APDP.Repositories;
-using Microsoft.EntityFrameworkCore;
+using ASM_APDP.Repositories; // Thêm namespace chứa IUserRepository
 
 namespace ASM_APDP
 {
@@ -12,18 +11,17 @@ namespace ASM_APDP
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Đăng ký DatabaseContext
+            builder.Services.AddDbContext<DatabaseContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("FinalQLVSContext")
+                ?? throw new InvalidOperationException("Connection string 'FinalQLVSContext' not found.")));
+
+            // Đăng ký IUserRepository và UserRepository
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession();
-
-
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-            builder.Services.AddDbContext<DatabaseContext>(option => option.UseSqlServer(connectionString));
-            builder.Services.AddScoped<IRoleRepository, RoleRepository>();
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IUserFacade, UserFacade>();
 
             var app = builder.Build();
 
@@ -31,7 +29,6 @@ namespace ASM_APDP
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -39,10 +36,9 @@ namespace ASM_APDP
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseSession();
 
             app.UseAuthorization();
-            app.UseSession();
-            app.UseMiddleware<AuthMiddleware>();
 
             app.MapControllerRoute(
                 name: "default",
