@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASM_APDP.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250321023606_UpdateMarkGradeColumn")]
-    partial class UpdateMarkGradeColumn
+    [Migration("20250328005635_UpdateDB")]
+    partial class UpdateDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,12 +66,7 @@ namespace ASM_APDP.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
                     b.HasKey("CourseID");
-
-                    b.HasIndex("UserID");
 
                     b.ToTable("Courses");
                 });
@@ -110,9 +105,10 @@ namespace ASM_APDP.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("RoleName")
-                        .HasMaxLength(50)
-                        .HasColumnType("int");
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -130,13 +126,13 @@ namespace ASM_APDP.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DoB")
-                        .HasMaxLength(50)
+                    b.Property<DateTime?>("DoB")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -161,13 +157,13 @@ namespace ASM_APDP.Migrations
             modelBuilder.Entity("ASM_APDP.Models.Class", b =>
                 {
                     b.HasOne("ASM_APDP.Models.Course", "Course")
-                        .WithMany()
+                        .WithMany("Classes")
                         .HasForeignKey("CourseID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ASM_APDP.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Classes")
                         .HasForeignKey("UserID");
 
                     b.Navigation("Course");
@@ -175,27 +171,16 @@ namespace ASM_APDP.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ASM_APDP.Models.Course", b =>
-                {
-                    b.HasOne("ASM_APDP.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ASM_APDP.Models.Mark", b =>
                 {
                     b.HasOne("ASM_APDP.Models.Course", "Course")
-                        .WithMany()
+                        .WithMany("Marks")
                         .HasForeignKey("CourseID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ASM_APDP.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Marks")
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -216,9 +201,23 @@ namespace ASM_APDP.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("ASM_APDP.Models.Course", b =>
+                {
+                    b.Navigation("Classes");
+
+                    b.Navigation("Marks");
+                });
+
             modelBuilder.Entity("ASM_APDP.Models.Role", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("ASM_APDP.Models.User", b =>
+                {
+                    b.Navigation("Classes");
+
+                    b.Navigation("Marks");
                 });
 #pragma warning restore 612, 618
         }
