@@ -1,5 +1,4 @@
-﻿@model ASM_APDP.Models.User
-
+﻿@model ASM_APDP.ViewModels.LoginViewModel
 @{
     Layout = null;
 }
@@ -12,6 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Andev Web</title>
     <link rel="stylesheet" href="~/css/style.css" asp-append-version="true">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 
 <body>
@@ -20,8 +20,19 @@
             @Html.AntiForgeryToken()
             <h2>Login Form</h2>
 
+            @* Thêm div để hiển thị thông báo lỗi *@
+            @if (ViewData.ModelState.ErrorCount > 0)
+            {
+                <div class="custom-error-box alert alert-danger alert-dismissible fade show" role="alert">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+
             <div class="input-field">
-                <input asp-for="Username" type="username" required>
+                <input asp-for="Username" type="text" required>
                 <label asp-for="Username">Enter your Username</label>
             </div>
 
@@ -30,13 +41,15 @@
                 <label asp-for="Password">Enter your password</label>
             </div>
 
-            <div class="forget">
-                <label for="remember">
-                    <input type="checkbox" id="remember">
-                    <p>Remember me</p>
-                </label>
-                <a href="#">Forgot password?</a>
+            <div class="">
+                <label asp-for="Id">Select Role</label>
+                <select asp-for="Id" required>
+                    <option value="2">User</option>
+                    <option value="1">Admin</option>
+                    <option value="3">Teacher</option>
+                </select>
             </div>
+
 
             <button type="submit">Log In</button>
 
@@ -45,6 +58,12 @@
             </div>
         </form>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
 </body>
 
 </html>
