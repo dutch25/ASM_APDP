@@ -1,0 +1,68 @@
+﻿.profile-panel {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    font-family: Arial, sans-serif;
+}
+
+    .profile-panel h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+.profile-section {
+    margin-bottom: 30px;
+}
+
+    .profile-section h3 {
+        color: #444;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 5px;
+    }
+
+.info-box {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+    .info-box p {
+        margin: 10px 0;
+        color: #555;
+    }
+
+    .info-box form label {
+        display: block;
+        font-weight: bold;
+        margin: 10px 0 5px;
+    }
+
+    .info-box input[type="text"],
+    .info-box input[type="email"],
+    .info-box input[type="password"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .info-box button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+        .info-box button:hover {
+            background-color: #0056b3;
+        }

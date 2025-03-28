@@ -1,0 +1,53 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Andev Web</title>
+    <link rel="stylesheet" href="~/css/prostyle.css" asp-append-version="true">
+</head>
+
+<body>
+    <main>
+        <div class="profile-panel">
+            <h2>User Profile</h2>
+
+            <!-- Display Basic Information -->
+            <div class="profile-section">
+                <h3>Basic Information</h3>
+                <div class="info-box">
+                    <p><strong>Username:</strong> </p>
+                    <p><strong>Email:</strong> </p>
+                    <p><strong>Phone:</strong> </p>
+                </div>
+            </div>
+
+            <!-- Update Information Form -->
+            <div class="profile-section">
+                <h3>Update Information</h3>
+                <div class="info-box">
+                    <form method="POST">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" value="" required>
+
+                        <label for="new-password">New Password:</label>
+                        <input type="password" id="new-password" name="new_password">
+
+                        <label for="confirm-password">Confirm New Password:</label>
+                        <input type="password" id="confirm-password" name="confirm_password">
+
+
+                        <button type="submit">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
