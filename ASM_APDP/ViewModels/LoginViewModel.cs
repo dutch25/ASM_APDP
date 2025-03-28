@@ -10,5 +10,9 @@ namespace ASM_APDP.ViewModels
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+
+        public DateTime? DoB { get; set; }
+
+        public int Id { get; set; }
     }
 }

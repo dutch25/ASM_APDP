@@ -23,13 +23,12 @@ namespace ASM_APDP.Controllers
             return View();
         }
 
-        // POST: /User/Register
+        // POST: /User/Register (Chỉ tạo Student)
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                // Kiểm tra username đã tồn tại chưa
                 var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
                 if (existingUser != null)
                 {
@@ -37,17 +36,15 @@ namespace ASM_APDP.Controllers
                     return View(model);
                 }
 
-                // Hash mật khẩu
                 string hashedPassword = HashPassword(model.Password);
 
-                // Tạo người dùng mới
                 var user = new User
                 {
                     Username = model.Username,
                     Password = hashedPassword,
                     Email = model.Email,
                     CreateDate = DateTime.Now,
-                    RoleId = 2 // Mặc định là user
+                    RoleId = 2 // Luôn là Student
                 };
 
                 _context.Users.Add(user);
@@ -70,21 +67,23 @@ namespace ASM_APDP.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username && u.RoleId == model.Id);
+
                 if (user == null || user.Password != HashPassword(model.Password))
                 {
-                    ModelState.AddModelError("", "Invalid username or password.");
-                    return View(model);
+                    ModelState.AddModelError("", "Invalid username, password, or role.");
+                    return View(model); // Đảm bảo trả về đúng kiểu model
                 }
 
-                // Lưu thông tin vào session
+                // Lưu vào session
                 HttpContext.Session.SetInt32("UserId", user.Id);
                 HttpContext.Session.SetString("Username", user.Username);
+                HttpContext.Session.SetInt32("RoleId", user.RoleId);
                 HttpContext.Session.SetInt32("IsLogin", 1);
 
                 return RedirectToAction("Index", "Home");
             }
-            return View(model);
+            return View(model); // Đảm bảo trả về đúng kiểu model
         }
 
         // GET: /User/Logout

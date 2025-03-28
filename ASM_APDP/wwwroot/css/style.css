@@ -74,7 +74,8 @@ h2 {
         transition: 0.3s ease;
     }
 
-    .input-field input {
+    .input-field input,
+    .input-field select {
         width: 100%;
         height: 40px;
         background: transparent;
@@ -91,6 +92,19 @@ h2 {
             top: 10px;
             transform: translateY(-150%);
             color: #ffdde1;
+        }
+
+    .input-field select {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 5px;
+        padding: 5px;
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+        .input-field select:focus {
+            outline: none;
+            border-color: #ffdde1;
         }
 
 .forget {
@@ -113,6 +127,8 @@ h2 {
     .forget label p {
         margin-left: 8px;
     }
+
+
 
 .wrapper a {
     color: #ffdde1;
@@ -147,3 +163,13 @@ button {
     margin-top: 30px;
     color: #ffffff;
 }
+
+.custom-error-box {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
