@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ASM_APDP.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateDB : Migration
+    public partial class AsmQLSV : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASM_APDP.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250328005635_UpdateDB")]
-    partial class UpdateDB
+    [Migration("20250329084957_AsmQLSV")]
+    partial class AsmQLSV
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
