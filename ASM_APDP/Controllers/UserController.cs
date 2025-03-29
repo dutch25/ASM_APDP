@@ -3,8 +3,6 @@ using ASM_APDP.Models;
 using ASM_APDP.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace ASM_APDP.Controllers
 {
@@ -36,12 +34,10 @@ namespace ASM_APDP.Controllers
                     return View(model);
                 }
 
-                string hashedPassword = HashPassword(model.Password);
-
                 var user = new User
                 {
                     Username = model.Username,
-                    Password = hashedPassword,
+                    Password = model.Password, // Lưu mật khẩu thô (Không mã hóa)
                     Email = model.Email,
                     CreateDate = DateTime.Now,
                     RoleId = 2 // Luôn là Student
@@ -67,12 +63,12 @@ namespace ASM_APDP.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username && u.RoleId == model.Id);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
 
-                if (user == null || user.Password != HashPassword(model.Password))
+                if (user == null || user.Password != model.Password) // Kiểm tra mật khẩu trực tiếp
                 {
-                    ModelState.AddModelError("", "Invalid username, password, or role.");
-                    return View(model); // Đảm bảo trả về đúng kiểu model
+                    ModelState.AddModelError("", "Invalid username or password.");
+                    return View(model);
                 }
 
                 // Lưu vào session
@@ -81,9 +77,16 @@ namespace ASM_APDP.Controllers
                 HttpContext.Session.SetInt32("RoleId", user.RoleId);
                 HttpContext.Session.SetInt32("IsLogin", 1);
 
-                return RedirectToAction("Index", "Home");
+                // Điều hướng dựa trên RoleId
+                return user.RoleId switch
+                {
+                    1 => RedirectToAction("AdminDashboard", "Admin"),
+                    2 => RedirectToAction("Index", "Home"),
+                    3 => RedirectToAction("TeacherDashboard", "Teacher"),
+                    _ => RedirectToAction("Login")
+                };
             }
-            return View(model); // Đảm bảo trả về đúng kiểu model
+            return View(model);
         }
 
         // GET: /User/Logout
@@ -91,20 +94,6 @@ namespace ASM_APDP.Controllers
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
-        }
-
-        private string HashPassword(string password)
-        {
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                StringBuilder builder = new StringBuilder();
-                foreach (var b in bytes)
-                {
-                    builder.Append(b.ToString("x2"));
-                }
-                return builder.ToString();
-            }
         }
     }
 }
