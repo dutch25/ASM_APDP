@@ -95,5 +95,11 @@ namespace ASM_APDP.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
+
+        // GET: /User/Profile
+        public IActionResult Profile()
+        {
+            return View();
+        }
     }
 }
