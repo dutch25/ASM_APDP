@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@200;300;400;500;600;700&display=swap");
+﻿@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@200;300;400;500;600;700&display=swap");
 
 * {
     margin: 0;
@@ -165,13 +165,36 @@ button {
 }
 
 .custom-error-box {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    padding: 10px;
+    background-color: rgba(248, 215, 218, 0.9); /* Nền màu đỏ nhạt */
+    color: #721c24; /* Màu chữ */
+    border: 1px solid rgba(185, 74, 72, 0.8); /* Viền màu đỏ đậm */
+    padding: 15px 20px; /* Tăng padding cho không gian bên trong */
     margin-bottom: 20px;
-    border-radius: 5px;
+    border-radius: 8px; /* Bo góc */
+    font-size: 1rem; /* Kích thước chữ */
+    display: flex; /* Căn giữa nội dung */
+    justify-content: space-between; /* Căn giữa nội dung */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng */
 }
+
+    .custom-error-box .message {
+        flex-grow: 1; /* Cho phép phần thông báo chiếm không gian còn lại */
+    }
+
+    .custom-error-box .close {
+        background: transparent;
+        border: none;
+        color: #721c24; /* Màu chữ cho nút đóng */
+        font-size: 1.5rem; /* Kích thước chữ cho nút đóng */
+        cursor: pointer; /* Con trỏ khi hover */
+        margin-left: 15px; /* Khoảng cách giữa thông báo và nút đóng */
+    }
+
+        .custom-error-box .close:hover {
+            color: #f00; /* Màu chữ cho nút đóng khi hover */
+        }
+
 .login-btn {
     width: 100%;
     padding: 10px;
