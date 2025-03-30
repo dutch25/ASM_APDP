@@ -1,0 +1,56 @@
+﻿/* Tổng thể trang */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 900px;
+    margin: 50px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+/* Bảng điểm */
+.table {
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+    .table th {
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f1f1f1;
+        transition: 0.3s;
+    }
+
+    .table td {
+        text-align: center;
+        padding: 10px;
+    }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+    }
+
+    .table td, .table th {
+        font-size: 14px;
+    }
+}
