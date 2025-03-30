@@ -1,20 +1,17 @@
-﻿using ASM_APDP.Data;
-using ASM_APDP.Models;
-using ASM_APDP.Repositories;
+﻿using ASM_APDP.Models;
+using ASM_APDP.Facades;
 using ASM_APDP.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
 
 namespace ASM_APDP.Controllers
 {
     public class UserController : Controller
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUserFacade _userFacade;
 
-        public UserController(IUserRepository userRepository)
+        public UserController(IUserFacade userFacade)
         {
-            _userRepository = userRepository;
+            _userFacade = userFacade;
         }
 
         // GET: /User/Register
@@ -25,11 +22,11 @@ namespace ASM_APDP.Controllers
 
         // POST: /User/Register (Chỉ tạo Student)
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public IActionResult Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var existingUser = _userRepository.GetUserByUsernameAndPassword(model.Username, model.Password);
+                var existingUser = _userFacade.GetUserByEmailAndPassword(model.Username, model.Password);
                 if (existingUser != null)
                 {
                     ModelState.AddModelError("", "Username already exists.");
@@ -45,7 +42,7 @@ namespace ASM_APDP.Controllers
                     RoleId = 2 // Luôn là Student
                 };
 
-                bool success = _userRepository.CreateUser(user);
+                bool success = _userFacade.RegisterUser(user);
                 if (success)
                 {
                     return RedirectToAction("Login");
@@ -64,13 +61,12 @@ namespace ASM_APDP.Controllers
 
         // POST: /User/Login
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public IActionResult Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = _userRepository.GetUserByUsernameAndPassword(model.Username, model.Password);
-
-                    if (user == null || user.Password != model.Password) // Kiểm tra mật khẩu trực tiếp
+                var user = _userFacade.GetUserByEmailAndPassword(model.Username, model.Password);
+                if (user == null || user.Password != model.Password) // Kiểm tra mật khẩu trực tiếp
                 {
                     ModelState.AddModelError("", "Invalid username or password.");
                     return View(model);
