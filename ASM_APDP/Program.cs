@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ASM_APDP.Data;
-using ASM_APDP.Repositories; // Thêm namespace chứa IUserRepository
+using ASM_APDP.Repositories;
+using ASM_APDP.Facades;
+// Thêm namespace chứa IUserRepository
 
 namespace ASM_APDP
 {
@@ -18,6 +20,8 @@ namespace ASM_APDP
 
             // Đăng ký IUserRepository và UserRepository
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserFacade, UserFacade>();
+
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
