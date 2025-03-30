@@ -12,7 +12,7 @@ namespace ASM_APDP.Repositories
 
         bool CreateUser(User user);
 
-        Task UpdateUser(User user);
+        Task<bool> UpdateUserAsync(User user);
 
         bool DeleteUser(int id);
     }

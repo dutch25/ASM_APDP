@@ -85,10 +85,10 @@ namespace ASM_APDP.Repositories
             }
         }
 
-        public async Task UpdateUser(User user)
+        public async Task<bool> UpdateUserAsync(User user)
         {
             _context.Users.Update(user);
-            _context.SaveChanges();
+            return await _context.SaveChangesAsync() > 0;
         }
 
     }

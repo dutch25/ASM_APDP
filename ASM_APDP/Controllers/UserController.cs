@@ -26,7 +26,7 @@ namespace ASM_APDP.Controllers
         {
             if (ModelState.IsValid)
             {
-                var existingUser = _userFacade.GetUserByEmailAndPassword(model.Username, model.Password);
+                var existingUser = _userFacade.GetUserByUsernameAndPassword(model.Username, model.Password);
                 if (existingUser != null)
                 {
                     ModelState.AddModelError("", "Username already exists.");
@@ -65,7 +65,7 @@ namespace ASM_APDP.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = _userFacade.GetUserByEmailAndPassword(model.Username, model.Password);
+                var user = _userFacade.GetUserByUsernameAndPassword(model.Username, model.Password);
                 if (user == null || user.Password != model.Password) // Kiểm tra mật khẩu trực tiếp
                 {
                     ModelState.AddModelError("", "Invalid username or password.");
@@ -96,7 +96,6 @@ namespace ASM_APDP.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
-
         // GET: /User/Profile
         public async Task<IActionResult> Profile()
         {
@@ -106,17 +105,11 @@ namespace ASM_APDP.Controllers
                 return RedirectToAction("Login");
             }
 
-            var user = await _userRepository.GetUserByUsernameAsync(username);
-            if (user == null)
+            var model = await _userFacade.GetUserProfileAsync(username);
+            if (model == null)
             {
                 return RedirectToAction("Login");
             }
-
-            var model = new ProfileViewModel
-            {
-                Username = user.Username,
-                Email = user.Email
-            };
 
             return View(model);
         }
@@ -133,28 +126,14 @@ namespace ASM_APDP.Controllers
                     return RedirectToAction("Login");
                 }
 
-                var user = await _userRepository.GetUserByUsernameAsync(username);
-                if (user == null)
+                bool updated = await _userFacade.UpdateUserProfileAsync(username, model);
+                if (updated)
                 {
-                    return RedirectToAction("Login");
+                    return RedirectToAction("Profile");
                 }
-
-                user.Email = model.Email;
-                if (!string.IsNullOrEmpty(model.NewPassword) && model.NewPassword == model.ConfirmPassword)
-                {
-                    user.Password = model.NewPassword; // Update password if provided and matches confirmation
-                }
-
-                await _userRepository.UpdateUser(user);
-
-                return RedirectToAction("Profile");
             }
 
             return View(model);
         }
-
-
-
-
     }
 }
