@@ -1,84 +1,78 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model ASM_APDP.ViewModels.ProfileViewModel
+
 @{
     Layout = null;
 }
-@{
-    <!DOCTYPE html>
-    <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Sliding Menu</title>
-        <link rel="stylesheet"
-              href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
-        <link rel="stylesheet" href="~/css/styleIndex.css" asp-append-version="true">
-        <link rel="stylesheet" href="~/css/prostyle.css" asp-append-version="true">
+<!DOCTYPE html>
+<html lang="en">
 
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link rel="stylesheet" href="~/css/styleIndex.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/prostyle.css" asp-append-version="true">
+</head>
 
-    <body>
-        <div class="menu">
-            <ul class="menu-content">
-                <li class="nav-item">
-                    @{
-                        var username = Context.Session.GetString("Username");
-                        if (!string.IsNullOrEmpty(username))
-                        {
-                            <span class="nav-link text-dark">Welcome, @username!</span>
-                        }
-                    }
-                </li>
-                <li><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
-                <li><a href="#"><span class="material-symbols-outlined">dashboard</span><span>View Course</span></a></li>
-                <li><a href="#"><span class="material-symbols-outlined">analytics</span><span>Timetable</span></a></li>
-                <li><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Profile"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
-                <li><a href="#"><span class="material-symbols-outlined">email</span><span>Contact</span></a></li>
-                <li>
-                    <a href="javascript:document.getElementById('logout-form').submit();">
-                        <span class="material-symbols-outlined">logout</span><span>Logout</span>
-                    </a>
-                    <form id="logout-form" asp-area="" asp-controller="User" asp-action="Logout" method="post" style="display: none;"></form>
-                </li>
-            </ul>
-        </div>
+<body>
+    <div class="menu">
+        <ul class="menu-content">
+            <li class="nav-item">
+                @if (!string.IsNullOrEmpty(Model.Username))
+                {
+                    <span class="nav-link text-dark">Welcome, @Model.Username!</span>
+                }
+            </li>
+            <li><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
+            <li><a href="#"><span class="material-symbols-outlined">dashboard</span><span>View Course</span></a></li>
+            <li><a href="#"><span class="material-symbols-outlined">analytics</span><span>Timetable</span></a></li>
+            <li><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Profile"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
+            <li><a href="#"><span class="material-symbols-outlined">email</span><span>Contact</span></a></li>
+            <li>
+                <a href="javascript:document.getElementById('logout-form').submit();">
+                    <span class="material-symbols-outlined">logout</span><span>Logout</span>
+                </a>
+                <form id="logout-form" asp-area="" asp-controller="User" asp-action="Logout" method="post" style="display: none;"></form>
+            </li>
+        </ul>
+    </div>
 
-        <div class="profile-panel">
-            <h2 style="lay" >User Profile</h2>
+    <div class="profile-panel">
+        <h2>User Profile</h2>
 
-            <!-- Display Basic Information -->
-            <div class="profile-section">
-                <h3>Basic Information</h3>
-                <div class="info-box">
-                    <p><strong>Username:</strong> @Model.Username</p>
-                    <p><strong>Email:</strong> @Model.Email</p>
-                </div>
-            </div>
-
-            <!-- Update Information Form -->
-            <div class="profile-section">
-                <h3>Update Information</h3>
-                <div class="info-box">
-                    <form method="POST">
-                        <label for="email">Email:</label>
-                        <input type="email" id="email" name="email" value="@Model.Email" required>
-
-                        <label for="new-password">New Password:</label>
-                        <input type="password" id="new-password" name="new_password">
-
-                        <label for="confirm-password">Confirm New Password:</label>
-                        <input type="password" id="confirm-password" name="confirm_password">
-
-                        <button type="submit">Update</button>
-                    </form>
-                </div>
+        <!-- Display Basic Information -->
+        <div class="profile-section">
+            <h3>Basic Information</h3>
+            <div class="info-box">
+                <p><strong>Username:</strong> @Model.Username</p>
+                <p><strong>Email:</strong> @Model.Email</p>
             </div>
         </div>
 
-        
-    </body>
+        <!-- Update Information Form -->
+        <div class="profile-section">
+            <h3>Update Information</h3>
+            <div class="info-box">
+                <form asp-action="Profile" method="post">
+                    <input type="hidden" asp-for="Username" />
 
-    </html>
-}
+                    <label asp-for="Email">Email:</label>
+                    <input asp-for="Email" type="email" required name="Email">
+
+                    <label asp-for="NewPassword">New Password:</label>
+                    <input asp-for="NewPassword" type="password" name="NewPassword">
+
+                    <label asp-for="ConfirmPassword">Confirm New Password:</label>
+                    <input asp-for="ConfirmPassword" type="password" name="ConfirmPassword">
+
+                    <button type="submit">Update</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
