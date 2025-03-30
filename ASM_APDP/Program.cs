@@ -20,7 +20,12 @@ namespace ASM_APDP
 
             // Đăng ký IUserRepository và UserRepository
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+
+
             builder.Services.AddScoped<IUserFacade, UserFacade>();
+            builder.Services.AddScoped<IRoleFacade, RoleFacade>();
+
 
 
             // Add services to the container.

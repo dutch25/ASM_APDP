@@ -1,4 +1,5 @@
 ﻿@model ASM_APDP.ViewModels.LoginViewModel
+
 @{
     Layout = null;
 }
@@ -20,7 +21,7 @@
             @Html.AntiForgeryToken()
             <h2>Login Form</h2>
 
-            @* Thêm div để hiển thị thông báo lỗi *@
+            @* Hiển thị lỗi *@
             @if (ViewData.ModelState.ErrorCount > 0)
             {
                 <div class="custom-error-box alert alert-danger alert-dismissible fade show" role="alert">
@@ -39,8 +40,18 @@
             <div class="input-field">
                 <input asp-for="Password" type="password" required>
                 <label asp-for="Password">Enter your password</label>
-            </div> <br />
-            
+            </div>
+
+            @* Dropdown chọn Role *@
+            <div class="input-field">
+                <select asp-for="RoleName" class="form-control">
+                    <option value="Admin">Admin</option>
+                    <option value="Student">Student</option>
+                    <option value="Teacher">Teacher</option>
+                </select>
+            </div>
+
+            <br />
             <button type="submit" class="login-btn">Log In</button>
 
             <div class="register">

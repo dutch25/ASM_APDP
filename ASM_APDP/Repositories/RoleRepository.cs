@@ -1,5 +1,8 @@
 ﻿using ASM_APDP.Data;
 using ASM_APDP.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ASM_APDP.Repositories
 {
@@ -11,7 +14,7 @@ namespace ASM_APDP.Repositories
             _context = context;
         }
 
-        IEnumerable<Role> IRoleRepository.GetAll()
+        public IEnumerable<Role> GetAll()
         {
             try
             {
@@ -19,18 +22,32 @@ namespace ASM_APDP.Repositories
             }
             catch (Exception)
             {
+                return new List<Role>();
+            }
+        }
+
+        public Role GetRoleByID(int Id)
+        {
+            try
+            {
+                return _context.Roles.FirstOrDefault(r => r.Id == Id);
+            }
+            catch (Exception)
+            {
                 return null;
             }
         }
 
-        Role IRoleRepository.GetRoleByID(int id)
+        public Role GetRoleByName(string RoleName)
         {
-            return null;
+            try
+            {
+                return _context.Roles.FirstOrDefault(r => r.RoleName == RoleName);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
-        Role IRoleRepository.GetRoleByName(string rolename)
-        {
-            return null;
-        }
-        
     }
 }
