@@ -1,76 +1,40 @@
-﻿* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    width: 100%;
-    font-family: Arial, sans-serif;
-    padding: 0 10px;
-    position: relative;
-}
-
-    body::before {
-        content: "";
-        position: absolute;
-        width: 100%;
-        height: 100vh;
-        background: url("https://images.pexels.com/photos/346529/pexels-photo-346529.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"), #000;
-        background-position: center;
-        background-size: cover;
-        z-index: -1;
-    }
-
-.profile-panel {
-    max-width: 1000px; /* Tăng chiều rộng tối đa */
+﻿.profile-panel {
+    max-width: 1000px; /* Chiều rộng tối đa lớn hơn */
     margin: 20px auto;
-    padding: 20px;
-    background-color: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    text-align: center;
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    text-align: left; /* Đặt chữ căn trái */
 }
-
     .profile-panel h2 {
-        text-align: center;
-        margin-bottom: 20px;
-        color: #333;
+        text-align: center; /* Căn giữa chữ tiêu đề */
+        margin-bottom: 30px; /* Khoảng cách dưới tiêu đề */
+        font-size: 24px; /* Kích thước chữ */
+        color: #333; /* Màu chữ */
     }
 
 .profile-section {
-    margin-bottom: 30px;
+    margin-bottom: 40px; /* Tăng khoảng cách dưới phần thông tin */
+    display: flex;
+    flex-direction: column; /* Để các phần tử xếp theo chiều dọc */
+    align-items: flex-start; /* Căn chỉnh các phần tử ở đầu */
 }
 
     .profile-section h3 {
         color: #444;
-        margin-bottom: 10px;
+        margin-bottom: 15px; /* Tăng khoảng cách dưới tiêu đề phần */
         border-bottom: 2px solid #ddd;
-        padding-bottom: 5px;
+        padding-bottom: 10px;
     }
 
 .info-box {
     background-color: #f9f9f9;
-    padding: 25px;
+    padding: 25px; /* Tăng padding */
     border: 2px solid #ddd;
     border-radius: 10px;
-    width:100%0;
+    width: 100%; /* Đảm bảo chiều rộng 100% */
 }
-
-    .info-box p {
-        margin: 10px 0;
-        color: #555;
-    }
-
-    .info-box form label {
-        display: block;
-        font-weight: bold;
-        margin: 10px 0 5px;
-    }
 
     .info-box input[type="text"],
     .info-box input[type="email"],
@@ -83,47 +47,24 @@ body {
     }
 
 button {
-    padding: 10px 20px;
+    padding: 15px 30px; /* Tăng kích thước nút */
     background-color: #4a9da6;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
     transition: background-color 0.3s ease;
-}
-
-    button:hover {
-        background-color: #5ab6c8;
-    }
-
-.center-button {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-    .center-button button {
-        flex: 1;
-    }
-
-.button-container {
-    margin-top: 20px;
-    text-align: center;
+    margin-top: 20px; /* Tăng khoảng cách trên nút */
 }
 
 .custom-button {
     background-color: #4a9da6;
     color: white;
-    font-size: 16px;
+    font-size: 18px;
     border: none;
-    padding: 10px;
-    border-radius: 5px;
+    padding: 15px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 100%;
 }
-
-    .custom-button:hover {
-        background-color: #5ab6c8;
-    }
