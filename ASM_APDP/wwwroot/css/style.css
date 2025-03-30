@@ -172,4 +172,18 @@ button {
     margin-bottom: 20px;
     border-radius: 5px;
 }
+.login-btn {
+    width: 100%;
+    padding: 10px;
+    border-radius: 20px;
+    background-color: #3f2b46;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.login-btn:hover {
+    background-color: #2c1d33;
+}
 

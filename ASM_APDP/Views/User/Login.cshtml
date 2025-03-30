@@ -39,19 +39,9 @@
             <div class="input-field">
                 <input asp-for="Password" type="password" required>
                 <label asp-for="Password">Enter your password</label>
-            </div>
-
-            <div class="">
-                <label asp-for="Id">Select Role</label>
-                <select asp-for="Id" required>
-                    <option value="2">Student</option>
-                    <option value="1">Admin</option>
-                    <option value="3">Teacher</option>
-                </select>
-            </div>
-
-
-            <button type="submit">Log In</button>
+            </div> <br />
+            
+            <button type="submit" class="login-btn">Log In</button>
 
             <div class="register">
                 <p>Don't have an account? <a asp-controller="User" asp-action="Register">Register</a></p>
