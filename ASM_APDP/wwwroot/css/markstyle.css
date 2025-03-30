@@ -1,0 +1,99 @@
+﻿.report-panel {
+    max-width: 1000px; /* Chiều rộng tối đa */
+    margin: 20px auto;
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.9); /* Nền trắng mờ */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3); /* Đổ bóng */
+    border-radius: 15px; /* Bo góc */
+    text-align: left; /* Căn trái */
+}
+
+    .report-panel h2 {
+        text-align: center; /* Căn giữa tiêu đề */
+        margin-bottom: 30px; /* Khoảng cách dưới tiêu đề */
+        font-size: 24px; /* Kích thước chữ */
+        color: #333; /* Màu chữ */
+    }
+
+.report-table {
+    width: 100%; /* Chiếm toàn bộ chiều rộng */
+    border-collapse: collapse; /* Xóa khoảng cách giữa các ô */
+    margin-top: 20px; /* Khoảng cách trên bảng */
+}
+
+    .report-table th, .report-table td {
+        border: 1px solid #ddd; /* Viền cho các ô */
+        padding: 15px; /* Padding cho các ô */
+        text-align: left; /* Căn trái nội dung trong bảng */
+    }
+
+    .report-table th {
+        background-color: #4a9da6; /* Nền cho tiêu đề bảng */
+        color: white; /* Màu chữ tiêu đề */
+    }
+
+    .report-table tr:nth-child(even) {
+        background-color: #f2f2f2; /* Nền cho hàng chẵn */
+    }
+
+    .report-table tr:hover {
+        background-color: #ddd; /* Nền khi hover */
+    }
+
+body {
+    color: #333;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+    color: white;
+}
+
+
+p {
+    color: #666;
+}
+
+
+a {
+    color: white;
+}
+
+    a:hover {
+        color: white;
+    }
+
+
+table {
+    color: #333;
+}
+
+    table th {
+        color: white;
+    }
+
+    table td {
+        color: #666;
+    }
+
+
+button, .btn {
+    color: #fff;
+    background-color: white;
+}
+
+    button:hover, .btn:hover {
+        color: #fff;
+        background-color: white;
+    }
+
+
+.custom-error-box {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
