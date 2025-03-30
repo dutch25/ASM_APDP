@@ -1,0 +1,169 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model ASM_APDP.Models.User
+@{ 
+	Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Course Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            width: 100%;
+            font-family: Arial, sans-serif;
+            padding: 0 10px;
+            position: relative;
+        }
+
+            body::before {
+                content: "";
+                position: absolute;
+                width: 100%;
+                height: 100vh;
+                background: url("https://images.pexels.com/photos/346529/pexels-photo-346529.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"), #000;
+                background-position: center;
+                background-size: cover;
+                z-index: -1;
+            }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input, button {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4a9da6;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+            button:hover {
+                background-color: #5ab6c8;
+            }
+
+        .button-row {
+            grid-column: span 2;
+            display: flex;
+            justify-content: space-between; /* Căn đều hai nút */
+            gap: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center; /* Căn giữa nút theo chiều ngang */
+            align-items: center; /* Căn giữa nút theo chiều dọc nếu cần */
+            margin-top: 20px; /* Khoảng cách phía trên */
+            width: 100%; /* Đảm bảo vùng chứa chiếm toàn bộ chiều ngang */
+        }
+
+        .custom-button {
+            width: 150px; /* Giữ nguyên kích thước */
+            padding: 10px;
+            background-color: #4a9da6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+            .custom-button:hover {
+                background-color: #5ab6c8;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Course Management</h1>
+        <br>
+        <!-- Add/Edit/Delete Courses -->
+        <div class="form-section">
+            <h2 style="text-align: center;">Add/Edit Course</h2>
+            <br>
+            <form id="course-form">
+                <div>
+                    <label for="course-id">Course ID</label>
+                    <input type="text" id="course-id" placeholder="Enter Course ID">
+                </div>
+                <div>
+                    <label for="course-name">Course Name</label>
+                    <input type="text" id="course-name" placeholder="Enter Course Name">
+                </div>
+                <div>
+                    <label for="course-desc">Course Description</label>
+                    <input type="text" id="course-desc" placeholder="Enter Course Description">
+                </div>
+                <div>
+                    <label for="course-duration">Duration (Weeks)</label>
+                    <input type="number" id="course-duration" placeholder="Enter Duration">
+                </div>
+                <!-- Nút được đặt trên cùng một dòng -->
+                <div class="button-row">
+                    <button type="submit">Save Course</button>
+                    <button type="button" onclick="window.location.href='view-all-courses.html'" id="view-all-courses">View All Courses</button>
+                </div>
+                <div class="button-container">
+                    <button type="button" class="custom-button" onclick="window.location.href='admin-home.html'">Back</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</body>
+</html>
