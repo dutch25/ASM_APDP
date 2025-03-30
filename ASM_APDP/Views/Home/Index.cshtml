@@ -30,10 +30,19 @@
     <body>
         <div class="menu">
             <ul class="menu-content">
+                <li class="nav-item">
+                    @{
+                        var username = Context.Session.GetString("Username");
+                        if (!string.IsNullOrEmpty(username))
+                        {
+                            <span class="nav-link text-dark">Welcome, @username!</span>
+                        }
+                    }
+                </li>
                 <li><a href="#"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
                 <li><a href="#"><span class="material-symbols-outlined">dashboard</span><span>View Course</span></a></li>
                 <li><a href="#"><span class="material-symbols-outlined">analytics</span><span>Timetable</span></a></li>
-                <li><a href="#"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
+                <li><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Profile"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
                 <li><a href="#"><span class="material-symbols-outlined">email</span><span>Contact</span></a></li>
                 <li>
                     <a href="javascript:document.getElementById('logout-form').submit();">
