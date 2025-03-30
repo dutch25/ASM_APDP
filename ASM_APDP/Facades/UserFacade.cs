@@ -66,14 +66,24 @@ namespace ASM_APDP.Facades
             var user = await _userRepository.GetUserByUsernameAsync(username);
             if (user == null) return false;
 
-            user.Email = model.Email;
+            bool isUpdated = false;
+
+            if (!string.IsNullOrEmpty(model.Email) && model.Email != user.Email)
+            {
+                user.Email = model.Email;
+                isUpdated = true;
+            }
 
             if (!string.IsNullOrEmpty(model.NewPassword) && model.NewPassword == model.ConfirmPassword)
             {
-                user.Password = model.NewPassword; // ⚠️ Consider hashing the password!
+                user.Password = model.NewPassword; // Không mã hóa mật khẩu
+                isUpdated = true;
             }
+
+            if (!isUpdated) return false; // Không có gì thay đổi, không cần lưu
 
             return await _userRepository.UpdateUserAsync(user);
         }
+
     }
 }
