@@ -1,5 +1,6 @@
 ﻿using ASM_APDP.Data;
 using ASM_APDP.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ASM_APDP.Repositories
 {
@@ -71,8 +72,7 @@ namespace ASM_APDP.Repositories
         {
             try
             {
-
-                return _context.Users.FirstOrDefault(u => u.Email == username && u.Password == password);
+                return _context.Users.FirstOrDefault(u => u.Username == username && u.Password == password);
             }
             catch (Exception ex)
             {
@@ -93,6 +93,7 @@ namespace ASM_APDP.Repositories
                 return false;
             }
         }
+
     }
 }
 
