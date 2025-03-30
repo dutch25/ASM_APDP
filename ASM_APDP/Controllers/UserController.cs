@@ -101,10 +101,64 @@ namespace ASM_APDP.Controllers
             return RedirectToAction("Login");
         }
 
+        // GET: /User/Profile
+        public async Task<IActionResult> Profile()
+        {
+            var username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username))
+            {
+                return RedirectToAction("Login");
+            }
+
+            var user = await _userRepository.GetUserByUsernameAsync(username);
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var model = new ProfileViewModel
+            {
+                Username = user.Username,
+                Email = user.Email
+            };
+
+            return View(model);
+        }
+
+        // POST: /User/Profile
+        [HttpPost]
+        public async Task<IActionResult> Profile(ProfileViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var username = HttpContext.Session.GetString("Username");
+                if (string.IsNullOrEmpty(username))
+                {
+                    return RedirectToAction("Login");
+                }
+
+                var user = await _userRepository.GetUserByUsernameAsync(username);
+                if (user == null)
+                {
+                    return RedirectToAction("Login");
+                }
+
+                user.Email = model.Email;
+                if (!string.IsNullOrEmpty(model.NewPassword) && model.NewPassword == model.ConfirmPassword)
+                {
+                    user.Password = model.NewPassword; // Update password if provided and matches confirmation
+                }
+
+                await _userRepository.UpdateUser(user);
+
+                return RedirectToAction("Profile");
+            }
+
+            return View(model);
+        }
 
 
-        
 
-       
+
     }
 }

@@ -7,12 +7,12 @@ namespace ASM_APDP.Repositories
         IEnumerable<User> GetAllUsers();
 
         User GetUserById(int id);
-
+        Task<User> GetUserByUsernameAsync(string username);
         User GetUserByUsernameAndPassword(string username, string password);
 
         bool CreateUser(User user);
 
-        bool UpdateUser(User user);
+        Task UpdateUser(User user);
 
         bool DeleteUser(int id);
     }
