@@ -97,9 +97,28 @@ namespace ASM_APDP.Controllers
         }
 
         // GET: /User/Profile
-        public IActionResult Profile()
+        [HttpGet("Profile")]
+        public async Task<IActionResult> Profile()
         {
-            return View();
+            var username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username))
+            {
+                return RedirectToAction("Login");
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var model = new ProfileViewModel
+            {
+                Username = user.Username,
+                Email = user.Email
+            };
+
+            return View(model);
         }
     }
 }
