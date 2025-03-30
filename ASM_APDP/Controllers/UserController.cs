@@ -1,18 +1,20 @@
 ﻿using ASM_APDP.Data;
 using ASM_APDP.Models;
+using ASM_APDP.Repositories;
 using ASM_APDP.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace ASM_APDP.Controllers
 {
     public class UserController : Controller
     {
-        private readonly DatabaseContext _context;
+        private readonly IUserRepository _userRepository;
 
-        public UserController(DatabaseContext context)
+        public UserController(IUserRepository userRepository)
         {
-            _context = context;
+            _userRepository = userRepository;
         }
 
         // GET: /User/Register
@@ -27,7 +29,7 @@ namespace ASM_APDP.Controllers
         {
             if (ModelState.IsValid)
             {
-                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
+                var existingUser = _userRepository.GetUserByUsernameAndPassword(model.Username, model.Password);
                 if (existingUser != null)
                 {
                     ModelState.AddModelError("", "Username already exists.");
@@ -43,10 +45,13 @@ namespace ASM_APDP.Controllers
                     RoleId = 2 // Luôn là Student
                 };
 
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
+                bool success = _userRepository.CreateUser(user);
+                if (success)
+                {
+                    return RedirectToAction("Login");
+                }
 
-                return RedirectToAction("Login");
+                ModelState.AddModelError("", "Error creating user.");
             }
             return View(model);
         }
@@ -63,9 +68,9 @@ namespace ASM_APDP.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
+                var user = _userRepository.GetUserByUsernameAndPassword(model.Username, model.Password);
 
-                if (user == null || user.Password != model.Password) // Kiểm tra mật khẩu trực tiếp
+                    if (user == null || user.Password != model.Password) // Kiểm tra mật khẩu trực tiếp
                 {
                     ModelState.AddModelError("", "Invalid username or password.");
                     return View(model);
@@ -96,30 +101,9 @@ namespace ASM_APDP.Controllers
             return RedirectToAction("Login");
         }
 
-        // GET: /User/Profile
-        [HttpGet("Profile")]
-        public async Task<IActionResult> Profile()
-        {
-            var username = HttpContext.Session.GetString("Username");
-            if (string.IsNullOrEmpty(username))
-            {
-                return RedirectToAction("Login");
-            }
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-            if (user == null)
-            {
-                return RedirectToAction("Login");
-            }
 
-            var model = new ProfileViewModel
-            {
-                Username = user.Username,
-                Email = user.Email
-            };
-
-            return View(model);
-        }
+        
 
        
     }
