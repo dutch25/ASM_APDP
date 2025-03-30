@@ -68,6 +68,16 @@ namespace ASM_APDP.Repositories
             }
         }
 
+        public async Task<User> GetUserByUsernameAsync(string username)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        }
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
         public User GetUserByUsernameAndPassword(string username, string password)
         {
             try
@@ -80,20 +90,11 @@ namespace ASM_APDP.Repositories
             }
         }
 
-        public bool UpdateUser(User user)
+        public async Task<bool> UpdateUserAsync(User user)
         {
-            try
-            {
-                _context.Users.Update(user);
-                _context.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            _context.Users.Update(user);
+            return await _context.SaveChangesAsync() > 0;
         }
-
     }
 }
 

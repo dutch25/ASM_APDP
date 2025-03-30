@@ -26,7 +26,7 @@ namespace ASM_APDP.Controllers
         {
             if (ModelState.IsValid)
             {
-                var existingUser = _userFacade.GetUserByEmailAndPassword(model.Username, model.Password);
+                var existingUser = _userFacade.GetUserByUsernameAndPassword(model.Username, model.Password);
                 if (existingUser != null)
                 {
                     ModelState.AddModelError("", "Username already exists.");
@@ -65,7 +65,7 @@ namespace ASM_APDP.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = _userFacade.GetUserByEmailAndPassword(model.Username, model.Password);
+                var user = _userFacade.GetUserByUsernameAndPassword(model.Username, model.Password);
                 if (user == null || user.Password != model.Password) // Kiểm tra mật khẩu trực tiếp
                 {
                     ModelState.AddModelError("", "Invalid username or password.");
@@ -96,5 +96,49 @@ namespace ASM_APDP.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
+        // GET: /User/Profile
+        public async Task<IActionResult> Profile()
+        {
+            var username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username))
+            {
+                return RedirectToAction("Login");
+            }
+
+            var model = await _userFacade.GetUserProfileAsync(username);
+            if (model == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            return View(model);
+        }
+
+        // POST: /User/Profile
+        [HttpPost]
+        public async Task<IActionResult> Profile(ProfileViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var username = HttpContext.Session.GetString("Username");
+                if (string.IsNullOrEmpty(username))
+                {
+                    return RedirectToAction("Login");
+                }
+
+                bool success = await _userFacade.UpdateUserProfileAsync(username, model);
+                if (!success)
+                {
+                    ModelState.AddModelError("", "Failed to update profile.");
+                    return View(model);
+                }
+
+                TempData["SuccessMessage"] = "Profile updated successfully!";
+                return RedirectToAction("Profile");
+            }
+
+            return View(model);
+        }
+
     }
 }
