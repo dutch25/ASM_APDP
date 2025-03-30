@@ -8,5 +8,27 @@ namespace ASM_APDP.Controllers
         {
             return View();
         }
+        public IActionResult AdminProfile()
+        {
+            return View();
+        }
+
+        public IActionResult CourseManagement()
+        {
+            return View();
+        }
+        public IActionResult AssignCoursesToStudents()
+        {
+            return View();
+        }
+        public IActionResult ViewAllAssignCourses()
+        {
+            return View();
+        }
+
+        public IActionResult ViewAllCourses()
+        {
+            return View();
+        }
     }
 }
