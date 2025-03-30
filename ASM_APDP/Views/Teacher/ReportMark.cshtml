@@ -1,0 +1,109 @@
+﻿@model IEnumerable<ASM_APDP.Models.Mark>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Mark</title>
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Đổi màu chữ cho toàn bộ trang */
+        body {
+            color: #333; /* Màu chữ mặc định */
+        }
+
+        /* Đổi màu chữ cho các tiêu đề */
+        h1, h2, h3, h4, h5, h6 {
+            color: #0056b3; /* Màu chữ cho tiêu đề */
+        }
+
+        /* Đổi màu chữ cho các đoạn văn */
+        p {
+            color: #666; /* Màu chữ cho đoạn văn */
+        }
+
+        /* Đổi màu chữ cho các liên kết */
+        a {
+            color: #007bff; /* Màu chữ cho liên kết */
+        }
+
+            a:hover {
+                color: #0056b3; /* Màu chữ khi hover liên kết */
+            }
+
+        /* Đổi màu chữ cho các bảng */
+        table {
+            color: #333; /* Màu chữ cho bảng */
+        }
+
+            table th {
+                color: #0056b3; /* Màu chữ cho tiêu đề bảng */
+            }
+
+            table td {
+                color: #666; /* Màu chữ cho ô bảng */
+            }
+
+        /* Đổi màu chữ cho các nút */
+        button, .btn {
+            color: #fff; /* Màu chữ cho nút */
+            background-color: #007bff; /* Màu nền cho nút */
+        }
+
+            button:hover, .btn:hover {
+                color: #fff; /* Màu chữ khi hover nút */
+                background-color: #0056b3; /* Màu nền khi hover nút */
+            }
+
+        /* Đổi màu chữ cho các thông báo lỗi */
+        .custom-error-box {
+            color: #721c24; /* Màu chữ cho thông báo lỗi */
+            background-color: #f8d7da; /* Màu nền cho thông báo lỗi */
+            border: 1px solid #f5c6cb; /* Viền cho thông báo lỗi */
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Report Mark</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Student Name</th>
+                    <th>Course Name</th>
+                    <th>Class Name</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var mark in Model)
+                {
+                    <tr>
+                        <td>@mark.User.Id</td>
+                        <td>@mark.User.Username</td>
+                        <td>@mark.Course.CourseName</td>
+                        <td>@(mark.User.Classes?.FirstOrDefault()?.ClassName ?? "N/A")</td>
+                        <td>@mark.Grade</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
+
