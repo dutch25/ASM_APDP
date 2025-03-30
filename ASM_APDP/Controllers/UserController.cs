@@ -2,16 +2,19 @@
 using ASM_APDP.Facades;
 using ASM_APDP.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace ASM_APDP.Controllers
 {
     public class UserController : Controller
     {
         private readonly IUserFacade _userFacade;
+        private readonly IRoleFacade _roleFacade;
 
-        public UserController(IUserFacade userFacade)
+        public UserController(IUserFacade userFacade, IRoleFacade roleFacade)
         {
             _userFacade = userFacade;
+            _roleFacade = roleFacade;
         }
 
         // GET: /User/Register
@@ -72,18 +75,29 @@ namespace ASM_APDP.Controllers
                     return View(model);
                 }
 
+                // Lấy thông tin vai trò từ RoleFacade
+                var role = _roleFacade.GetRoleById(user.RoleId);
+                if (role == null || string.IsNullOrEmpty(role.RoleName) || role.RoleName != model.RoleName)
+                {
+                    ModelState.AddModelError("", "Invalid role assignment.");
+                    return View(model);
+                }
+
+                model.RoleName = role.RoleName;
+
                 // Lưu vào session
                 HttpContext.Session.SetInt32("UserId", user.Id);
                 HttpContext.Session.SetString("Username", user.Username);
                 HttpContext.Session.SetInt32("RoleId", user.RoleId);
+                HttpContext.Session.SetString("RoleName", model.RoleName);
                 HttpContext.Session.SetInt32("IsLogin", 1);
 
                 // Điều hướng dựa trên RoleId
-                return user.RoleId switch
+                return role.RoleName switch
                 {
-                    1 => RedirectToAction("AdminDashboard", "Admin"),
-                    2 => RedirectToAction("Index", "Home"),
-                    3 => RedirectToAction("TeacherDashboard", "Teacher"),
+                    "Admin" => RedirectToAction("AdminDashboard", "Admin"),
+                    "Student" => RedirectToAction("Index", "Home"),
+                    "Teacher" => RedirectToAction("TeacherDashboard", "Teacher"),
                     _ => RedirectToAction("Login")
                 };
             }

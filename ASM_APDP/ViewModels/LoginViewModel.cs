@@ -4,15 +4,15 @@ namespace ASM_APDP.ViewModels
 {
     public class LoginViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Username is required")]
         public string Username { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        public DateTime? DoB { get; set; }
-
-        public int Id { get; set; }
+        [Required(ErrorMessage = "Role is required")]
+        public string RoleName { get; set; }
     }
+
 }
