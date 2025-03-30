@@ -29,11 +29,13 @@
                 </div>
                 <div class="d-flex align-items-center">
                     <div class="me-3">
-                        <a asp-area="" asp-controller="Profile" asp-action="Index" class="text-dark text-decoration-none">
-                            <div class="p-2 border rounded bg-light" style="cursor: pointer;">
-                                Notification
-                            </div>
-                        </a>
+                        @{
+                            var username = Context.Session.GetString("Username");
+                            if (!string.IsNullOrEmpty(username))
+                            {
+                                <span class="text-dark">Welcome, @username!</span>
+                            }
+                        }
                     </div>
                     <form asp-area="" asp-controller="User" asp-action="Logout" method="post">
                         <button type="submit" class="btn btn-danger">Logout</button>
