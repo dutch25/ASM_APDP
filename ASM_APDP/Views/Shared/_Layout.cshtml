@@ -23,9 +23,21 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Profile">Profile</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Profile">Profile</a>
                         </li>
                     </ul>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <a asp-area="" asp-controller="Profile" asp-action="Index" class="text-dark text-decoration-none">
+                            <div class="p-2 border rounded bg-light" style="cursor: pointer;">
+                                Notification
+                            </div>
+                        </a>
+                    </div>
+                    <form asp-area="" asp-controller="User" asp-action="Logout" method="post">
+                        <button type="submit" class="btn btn-danger">Logout</button>
+                    </form>
                 </div>
             </div>
         </nav>
