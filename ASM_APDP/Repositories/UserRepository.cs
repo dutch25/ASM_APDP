@@ -73,6 +73,11 @@ namespace ASM_APDP.Repositories
             return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
         }
 
+        public async Task<User> GetUserByEmail(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
         public User GetUserByUsernameAndPassword(string username, string password)
         {
             try
@@ -90,7 +95,6 @@ namespace ASM_APDP.Repositories
             _context.Users.Update(user);
             return await _context.SaveChangesAsync() > 0;
         }
-
     }
 }
 

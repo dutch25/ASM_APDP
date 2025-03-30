@@ -7,9 +7,13 @@ namespace ASM_APDP.Facades
     {
         IEnumerable<User> GetAllUsers();
         User GetUserById(int id);
-        User GetUserByUsernameAndPassword(string email, string password);
+        User GetUserByUsernameAndPassword(string username, string password);
+
+        User GetUserByEmail(string email);
+
+
         bool RegisterUser(User user);
-        Task UpdateUser(User user);
+        Task<bool> UpdateUser(User user);
         bool DeleteUser(int id);
 
         Task<ProfileViewModel> GetUserProfileAsync(string username);

@@ -126,14 +126,19 @@ namespace ASM_APDP.Controllers
                     return RedirectToAction("Login");
                 }
 
-                bool updated = await _userFacade.UpdateUserProfileAsync(username, model);
-                if (updated)
+                bool success = await _userFacade.UpdateUserProfileAsync(username, model);
+                if (!success)
                 {
-                    return RedirectToAction("Profile");
+                    ModelState.AddModelError("", "Failed to update profile.");
+                    return View(model);
                 }
+
+                TempData["SuccessMessage"] = "Profile updated successfully!";
+                return RedirectToAction("Profile");
             }
 
             return View(model);
         }
+
     }
 }

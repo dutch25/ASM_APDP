@@ -10,6 +10,9 @@ namespace ASM_APDP.Repositories
         Task<User> GetUserByUsernameAsync(string username);
         User GetUserByUsernameAndPassword(string username, string password);
 
+        User GetUserByEmail(string email);
+
+
         bool CreateUser(User user);
 
         Task<bool> UpdateUserAsync(User user);
