@@ -24,7 +24,7 @@
             @if (ViewData.ModelState.ErrorCount > 0)
             {
                 <div class="custom-error-box alert alert-danger alert-dismissible fade show" role="alert">
-                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <strong>Invalid username or password.</strong> <!-- Thêm thông báo lỗi cụ thể -->
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
