@@ -30,13 +30,12 @@
     <body>
         <div class="menu">
             <ul class="menu-content">
-                <li>
+                <li class="">
                     @{
                         var username = Context.Session.GetString("Username");
                         if (!string.IsNullOrEmpty(username))
                         {
-                            <span>Welcome, @username!</span>
-                            <span class="nav-link text-dark">Welcome, @username!</span>
+                        <a><span class="material-symbols-outlined">account_circle</span><span>Welcome, @username</span></a>
                         }
                     }
                 </li>
