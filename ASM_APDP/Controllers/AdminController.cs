@@ -55,7 +55,7 @@ namespace ASM_APDP.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AssignStudentToClass(AssignCoursesToStudentsViewModel model)
+        public IActionResult AssignStudentToClass(AssignCoursesToStudentsViewModel model)
         {
             if (model.StudentId <= 0 || string.IsNullOrEmpty(model.ClassName) || model.CourseId <= 0)
             {
@@ -77,10 +77,29 @@ namespace ASM_APDP.Controllers
                 return RedirectToAction("AssignCoursesToStudents");
             }
 
-            existingClass.UserID = model.StudentId;
-            existingClass.CourseID = model.CourseId;
+            var course = _courseFacade.GetCourseById(model.CourseId);
+            if (course == null)
+            {
+                TempData["ErrorMessage"] = "Course not found.";
+                return RedirectToAction("AssignCoursesToStudents");
+            }
 
-            bool isAssigned = await _classFacade.UpdateClassAsync(existingClass);
+            // Ensure the student is not already assigned to the class and course
+            if (existingClass.UserID == model.StudentId && existingClass.CourseID == model.CourseId)
+            {
+                TempData["ErrorMessage"] = "Student is already assigned to this class and course.";
+                return RedirectToAction("AssignCoursesToStudents");
+            }
+
+            // Create a new Class entity to avoid overwriting existing data
+            var newClass = new Class
+            {
+                ClassName = existingClass.ClassName,
+                UserID = model.StudentId,
+                CourseID = model.CourseId
+            };
+
+            bool isAssigned = _classFacade.CreateClass(newClass);
             if (isAssigned)
             {
                 TempData["SuccessMessage"] = "Student assigned successfully.";
