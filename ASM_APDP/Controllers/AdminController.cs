@@ -122,8 +122,11 @@ namespace ASM_APDP.Controllers
         public IActionResult CourseManagement()
         {
             var model = new AddCourseViewModel();
+            model.Courses = _courseFacade.GetAllCourses().ToList();
             return View(model);
         }
+
+
 
         [HttpGet]
         public IActionResult AddCourse()
@@ -132,6 +135,7 @@ namespace ASM_APDP.Controllers
             return View(model);
         }
 
+        [HttpPost]
         [HttpPost]
         public async Task<IActionResult> AddCourse(AddCourseViewModel model)
         {
@@ -146,15 +150,43 @@ namespace ASM_APDP.Controllers
                 if (isCreated)
                 {
                     TempData["SuccessMessage"] = "Course added successfully.";
-                    return RedirectToAction("ViewAllCourses");
+                    return RedirectToAction("CourseManagement");
                 }
                 else
                 {
                     TempData["ErrorMessage"] = "Error adding course.";
                 }
             }
-            return View(model);
+            model.Courses = _courseFacade.GetAllCourses().ToList();
+            return View("CourseManagement", model);
         }
+
+        [HttpPost]
+        public IActionResult DeleteCourse(int courseId)
+        {
+            var course = _courseFacade.GetCourseById(courseId);
+            if (course != null)
+            {
+                var isDeleted = _courseFacade.DeleteCourse(courseId);
+                if (isDeleted)
+                {
+                    TempData["SuccessMessage"] = "Course deleted successfully.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Error deleting course.";
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Course not found.";
+            }
+            return RedirectToAction("CourseManagement");
+        }
+
+
+
+
 
     }
 
