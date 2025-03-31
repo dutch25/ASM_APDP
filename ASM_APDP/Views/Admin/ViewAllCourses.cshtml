@@ -13,43 +13,10 @@
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
     <link rel="stylesheet" href="~/css/styleIndex.css" asp-append-version="true">
+    <link href="~/css/markstyle.css" rel="stylesheet" />
     <title>All Courses</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background: #f9f9f9;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px auto;
-        }
-
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #4a9da6;
-            color: white;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
+        
         /* Nút thiết kế */
         .button-container {
             text-align: center;
@@ -76,12 +43,12 @@
 <body>
     <div class="menu">
         <ul class="menu-content">
-            <li>
+            <li class="">
                 @{
                     var username = Context.Session.GetString("Username");
                     if (!string.IsNullOrEmpty(username))
                     {
-                        <span class="nav-link text-dark">Welcome, @username!</span>
+                        <a><span class="material-symbols-outlined">account_circle</span><span>Welcome, @username</span></a>
                     }
                 }
             </li>
@@ -98,19 +65,22 @@
             </li>
         </ul>
     </div>
-    <h1>All Courses</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Course ID</th>
-                <th>Course Name</th>
-                <th>Description</th>
-                <th>Duration (Weeks)</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+    <div class="report-panel">
+        <h1>All Courses</h1>
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th>Course ID</th>
+                    <th>Course Name</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div class="button-container">
+        <button type="button" class="custom-button" id="back" onclick="window.location.href='@Url.Action("CourseManagement", "Admin")'">Back</button>
+    </div>
 
 </body>
 </html>

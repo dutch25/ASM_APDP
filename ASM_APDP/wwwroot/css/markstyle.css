@@ -7,6 +7,12 @@
     border-radius: 15px; /* Bo góc */
     text-align: left; /* Căn trái */
 }
+    .report-panel h1 {
+        text-align: center; /* Căn giữa tiêu đề */
+        margin-bottom: 30px; /* Khoảng cách dưới tiêu đề */
+        font-size: 35px; /* Kích thước chữ */
+        color: #333; /* Màu chữ */
+    }
 
     .report-panel h2 {
         text-align: center; /* Căn giữa tiêu đề */
@@ -46,7 +52,7 @@ body {
 
 
 h1, h2, h3, h4, h5, h6 {
-    color: white;
+    color: #c9c9c9;
 }
 
 
@@ -56,11 +62,11 @@ p {
 
 
 a {
-    color: white;
+    color: #c9c9c9;
 }
 
     a:hover {
-        color: white;
+        color: #c9c9c9;
     }
 
 
@@ -69,7 +75,7 @@ table {
 }
 
     table th {
-        color: white;
+        color: #c9c9c9;
     }
 
     table td {
@@ -79,12 +85,12 @@ table {
 
 button, .btn {
     color: #fff;
-    background-color: white;
+    background-color: #c9c9c9;
 }
 
     button:hover, .btn:hover {
         color: #fff;
-        background-color: white;
+        background-color: #c9c9c9;
     }
 
 

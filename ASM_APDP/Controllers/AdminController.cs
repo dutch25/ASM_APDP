@@ -34,6 +34,15 @@ namespace ASM_APDP.Controllers
             return View();
         }
 
+        public IActionResult ViewAllAssignCourses()
+        {
+            return View();
+        }
+        public IActionResult ViewAllCourses()
+        {
+            return View();
+        }
+
         public IActionResult AssignCoursesToStudents()
         {
             var classes = _classFacade.GetAllClasses();
