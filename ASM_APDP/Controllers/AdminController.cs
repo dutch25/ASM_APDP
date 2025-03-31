@@ -85,7 +85,10 @@ namespace ASM_APDP.Controllers
             }
 
             // Ensure the student is not already assigned to the class and course
-            if (existingClass.UserID == model.StudentId && existingClass.CourseID == model.CourseId)
+            var isAlreadyAssigned = _classFacade.GetAllClasses()
+                .Any(c => c.UserID == model.StudentId && c.CourseID == model.CourseId && c.ClassName == model.ClassName);
+
+            if (isAlreadyAssigned)
             {
                 TempData["ErrorMessage"] = "Student is already assigned to this class and course.";
                 return RedirectToAction("AssignCoursesToStudents");
