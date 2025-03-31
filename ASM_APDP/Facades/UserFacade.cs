@@ -78,7 +78,8 @@ namespace ASM_APDP.Facades
             return new ProfileViewModel
             {
                 Username = user.Username,
-                Email = user.Email
+                Email = user.Email,
+                FullName = user.FullName
             };
         }
 
@@ -92,6 +93,12 @@ namespace ASM_APDP.Facades
             if (!string.IsNullOrEmpty(model.Email) && model.Email != user.Email)
             {
                 user.Email = model.Email;
+                isUpdated = true;
+            }
+
+            if (!string.IsNullOrEmpty(model.FullName) && model.FullName != user.FullName)
+            {
+                user.FullName = model.FullName;
                 isUpdated = true;
             }
 

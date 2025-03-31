@@ -33,6 +33,7 @@ namespace ASM_APDP.Controllers
                 var user = new User
                 {
                     Username = model.Username,
+                    FullName = model.FullName,
                     Password = model.Password, // Không mã hóa mật khẩu
                     Email = model.Email,
                     CreateDate = DateTime.Now,
