@@ -135,7 +135,6 @@ namespace ASM_APDP.Controllers
             return View(model);
         }
 
-        // ✅ Sửa lỗi cập nhật Profile
         [HttpPost]
         public async Task<IActionResult> Profile(ProfileViewModel model)
         {
@@ -150,13 +149,14 @@ namespace ASM_APDP.Controllers
                 bool success = await _userFacade.UpdateUserProfileAsync(username, model);
                 if (success)
                 {
-                    // Redirect to the appropriate dashboard based on the role
+                    TempData["SuccessMessage"] = "Your profile has been updated successfully.";
+
                     return model.RoleId switch
                     {
                         1 => RedirectToAction("AdminDashboard", "Admin"),
                         2 => RedirectToAction("Index", "Home"),
                         3 => RedirectToAction("TeacherDashboard", "Teacher"),
-                        _ => RedirectToAction("Login")
+                        _ => RedirectToAction("Profile", "User")
                     };
                 }
                 ModelState.AddModelError("", "Error updating user.");
@@ -164,5 +164,6 @@ namespace ASM_APDP.Controllers
 
             return View(model);
         }
+
     }
 }

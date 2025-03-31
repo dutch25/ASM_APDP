@@ -1,56 +1,85 @@
-﻿using ASM_APDP.Data;
+﻿using ASM_APDP.Facades;
 using ASM_APDP.Models;
+using ASM_APDP.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Threading.Tasks;
-
 
 namespace ASM_APDP.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly DatabaseContext _context;
-        public AdminController(DatabaseContext context)
+        private readonly IClassFacade _classFacade;
+        private readonly IUserFacade _userFacade;
+        private readonly ICourseFacade _courseFacade;
+
+        public AdminController(IClassFacade classFacade, IUserFacade userFacade, ICourseFacade courseFacade)
         {
-            _context = context;
+            _classFacade = classFacade;
+            _userFacade = userFacade;
+            _courseFacade = courseFacade;
         }
+
         public IActionResult AdminDashboard()
         {
             return View();
         }
 
-        // GET: /Admin/Profile
         public IActionResult AdminProfile()
         {
             return View();
         }
 
-        // GET: /Admin/ManageCourses
         public IActionResult CourseManagement()
         {
             return View();
         }
 
-        // GET: /Admin/AssignCoursesToStudents
         public IActionResult AssignCoursesToStudents()
         {
+            var classes = _classFacade.GetAllClasses();
+            var students = _userFacade.GetAllUsers();
+            var courses = _courseFacade.GetAllCourses();
+            ViewBag.Classes = classes;
+            ViewBag.Students = students;
+            ViewBag.Courses = courses;
             return View();
         }
 
-        // GET: /Admin/ViewAllAssignCourses
-        public IActionResult ViewAllAssignCourses()
+        [HttpPost]
+        public async Task<IActionResult> AssignStudentToClass(AssignCoursesToStudentsViewModel model)
         {
-            return View();
-        }
+            if (model.StudentId <= 0 || string.IsNullOrEmpty(model.ClassName) || model.CourseId <= 0)
+            {
+                TempData["ErrorMessage"] = "Invalid input data.";
+                return RedirectToAction("AssignCoursesToStudents");
+            }
 
-        // GET: /Admin/ViewAllCourses
-        public async Task<IActionResult> ViewAllCourses()
-        {
-            var courses = await _context.Courses
-        .Select(c => new { c.CourseID, c.CourseName })
-        .ToListAsync();
-            return View(courses);
+            var student = _userFacade.GetUserById(model.StudentId);
+            if (student == null)
+            {
+                TempData["ErrorMessage"] = "Student not found.";
+                return RedirectToAction("AssignCoursesToStudents");
+            }
+
+            var existingClass = _classFacade.GetClassByName(model.ClassName);
+            if (existingClass == null)
+            {
+                TempData["ErrorMessage"] = "Class not found.";
+                return RedirectToAction("AssignCoursesToStudents");
+            }
+
+            existingClass.UserID = model.StudentId;
+            existingClass.CourseID = model.CourseId;
+
+            bool isAssigned = await _classFacade.UpdateClassAsync(existingClass);
+            if (isAssigned)
+            {
+                TempData["SuccessMessage"] = "Student assigned successfully.";
+                return RedirectToAction("AssignCoursesToStudents");
+            }
+
+            TempData["ErrorMessage"] = "Error assigning student to class.";
+            return RedirectToAction("AssignCoursesToStudents");
         }
     }
 }

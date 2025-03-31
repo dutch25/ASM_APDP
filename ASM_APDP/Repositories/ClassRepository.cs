@@ -1,8 +1,8 @@
 ﻿using ASM_APDP.Data;
 using ASM_APDP.Models;
-using System;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace ASM_APDP.Repositories
 {
@@ -15,84 +15,41 @@ namespace ASM_APDP.Repositories
             _context = context;
         }
 
-        public int Create(Class classEntity)
+        public IEnumerable<Class> GetAllClasses()
         {
-            try
-            {
-                _context.Classes.Add(classEntity);
-                return _context.SaveChanges();
-            }
-            catch (Exception)
-            {
-                return 0;
-            }
+            return _context.Classes;
         }
 
-        public bool Delete(int id)
+        public Class GetClassById(int id)
         {
-            try
-            {
-                var classEntity = _context.Classes.Find(id);
-                if (classEntity == null)
-                {
-                    return false;
-                }
-                _context.Classes.Remove(classEntity);
-                return _context.SaveChanges() > 0;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public IEnumerable<Class> GetAll()
-        {
-            try
-            {
-                return _context.Classes.ToList();
-            }
-            catch (Exception)
-            {
-                return Enumerable.Empty<Class>();
-            }
-        }
-
-        public Class GetClassByID(int id)
-        {
-            try
-            {
-                return _context.Classes.Find(id);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return _context.Classes.Find(id);
         }
 
         public Class GetClassByName(string className)
         {
-            try
-            {
-                return _context.Classes.FirstOrDefault(c => c.ClassName == className);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return _context.Classes.FirstOrDefault(c => c.ClassName == className);
         }
 
-        public bool Update(Class classEntity)
+        public bool CreateClass(Class classEntity)
         {
-            try
-            {
-                _context.Classes.Update(classEntity);
-                return _context.SaveChanges() > 0;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            _context.Classes.Add(classEntity);
+            return _context.SaveChanges() > 0;
+        }
+
+        public async Task<bool> UpdateClassAsync(Class classEntity)
+        {
+            _context.Classes.Update(classEntity);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public bool DeleteClass(int id)
+        {
+            var classEntity = _context.Classes.Find(id);
+            if (classEntity == null) return false;
+
+            _context.Classes.Remove(classEntity);
+            return _context.SaveChanges() > 0;
         }
     }
 }
+

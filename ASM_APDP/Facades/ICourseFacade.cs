@@ -1,10 +1,9 @@
 ﻿using ASM_APDP.Models;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace ASM_APDP.Repositories
+namespace ASM_APDP.Facades
 {
-    public interface ICourseRepository
+    public interface ICourseFacade
     {
         IEnumerable<Course> GetAllCourses();
         Course GetCourseById(int id);
