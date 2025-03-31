@@ -77,15 +77,17 @@
 
 <body>
     <div class="menu">
-           <ul class="menu-content">               
-               @{
+           <ul class="menu-content">
+            <li class="">
+                @{
                     var username = Context.Session.GetString("Username");
                     if (!string.IsNullOrEmpty(username))
                     {
-                        <span class="nav-link text-dark">Welcome, @username!</span>
+                        <a><span class="material-symbols-outlined">account_circle</span><span>Welcome, @username</span></a>
                     }
-               }               
-                <li><a href="#"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
+                }
+            </li>
+            <li><a href="#"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
                 <li><a href="#"><span class="material-symbols-outlined">analytics</span><span>Timetable</span></a></li>
                 <li>
                     <a href="javascript:document.getElementById('reportmark-form').submit();">
