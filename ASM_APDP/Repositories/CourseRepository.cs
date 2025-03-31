@@ -1,8 +1,8 @@
 ﻿using ASM_APDP.Data;
 using ASM_APDP.Models;
-using System;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace ASM_APDP.Repositories
 {
@@ -15,84 +15,40 @@ namespace ASM_APDP.Repositories
             _context = context;
         }
 
-        public int Create(Course courseEntity)
+        public IEnumerable<Course> GetAllCourses()
         {
-            try
-            {
-                _context.Courses.Add(courseEntity);
-                return _context.SaveChanges();
-            }
-            catch (Exception)
-            {
-                return 0;
-            }
+            return _context.Courses;
         }
 
-        public bool Delete(int id)
+        public Course GetCourseById(int id)
         {
-            try
-            {
-                var courseEntity = _context.Courses.Find(id);
-                if (courseEntity == null)
-                {
-                    return false;
-                }
-                _context.Courses.Remove(courseEntity);
-                return _context.SaveChanges() > 0;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public IEnumerable<Course> GetAll()
-        {
-            try
-            {
-                return _context.Courses.ToList();
-            }
-            catch (Exception)
-            {
-                return Enumerable.Empty<Course>();
-            }
-        }
-
-        public Course GetCourseByID(int id)
-        {
-            try
-            {
-                return _context.Courses.Find(id);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return _context.Courses.Find(id);
         }
 
         public Course GetCourseByName(string courseName)
         {
-            try
-            {
-                return _context.Courses.FirstOrDefault(c => c.CourseName == courseName);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return _context.Courses.FirstOrDefault(c => c.CourseName == courseName);
         }
 
-        public bool Update(Course courseEntity)
+        public bool CreateCourse(Course courseEntity)
         {
-            try
-            {
-                _context.Courses.Update(courseEntity);
-                return _context.SaveChanges() > 0;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            _context.Courses.Add(courseEntity);
+            return _context.SaveChanges() > 0;
+        }
+
+        public async Task<bool> UpdateCourseAsync(Course courseEntity)
+        {
+            _context.Courses.Update(courseEntity);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public bool DeleteCourse(int id)
+        {
+            var courseEntity = _context.Courses.Find(id);
+            if (courseEntity == null) return false;
+
+            _context.Courses.Remove(courseEntity);
+            return _context.SaveChanges() > 0;
         }
     }
 }

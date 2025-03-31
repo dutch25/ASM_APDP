@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ASM_APDP.Repositories
+namespace ASM_APDP.Facades
 {
-    public interface IClassRepository
+    public interface IClassFacade
     {
         IEnumerable<Class> GetAllClasses();
         Class GetClassById(int id);
