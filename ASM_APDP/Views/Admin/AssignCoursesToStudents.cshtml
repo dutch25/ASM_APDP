@@ -144,10 +144,10 @@
                     }
                 }
             </li>
-            <li><a href="#"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
+            <li><a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="AdminDashBoard"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
             <li><a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="CourseManagement"><span class="material-symbols-outlined">book</span><span>Course Management</span></a></li>
             <li><a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="AssignCoursesToStudents"><span class="material-symbols-outlined">assignment_ind</span><span>Assign Courses To Students</span></a></li>
-            <li><a href="#"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
+            <li><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Profile"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
             <li><a href="#"><span class="material-symbols-outlined">email</span><span>Contact</span></a></li>
             <li>
                 <a href="javascript:document.getElementById('logout-form').submit();">
@@ -199,6 +199,8 @@
 
             <button type="submit" class="btn btn-primary">Assign</button>
         </form>
+
+           
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
