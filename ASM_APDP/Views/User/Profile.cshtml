@@ -20,16 +20,15 @@
 <body>
     <div class="menu">
         <ul class="menu-content">
-            <li class="nav-item">
+            <li class="">
                 @{
                     var username = Context.Session.GetString("Username");
                     if (!string.IsNullOrEmpty(username))
                     {
-                        <span>Welcome, @username!</span>
+                        <a><span class="material-symbols-outlined">account_circle</span><span>Welcome, @username</span></a>
                     }
                 }
             </li>
-           
 
             @if (roleName == "Admin")
             {
@@ -43,21 +42,23 @@
             else if (roleName == "Teacher")
             {
                 <li><a asp-area="" asp-controller="Teacher" asp-action="TeacherDashboard"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
-                <li><a asp-area="" asp-controller="User" asp-action="Profile"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
                 <li><a href="#"><span class="material-symbols-outlined">analytics</span><span>Timetable</span></a></li>
                 <li><a asp-area="" asp-controller="Teacher" asp-action="ReportMark"><span class="material-symbols-outlined">person</span><span>Report Mark</span></a></li>
+                <li><a asp-area="" asp-controller="User" asp-action="Profile"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
+
                 <li><a href="#"><span class="material-symbols-outlined">email</span><span>Contact</span></a></li>
 
             }
             else if (roleName == "Student")
             {
-                <li><a href="#"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
-                <li><a asp-area="" asp-controller="User" asp-action="Profile"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
-                <li><a href="#"><span class="material-symbols-outlined">dashboard</span><span>View Course</span></a></li>
+                <li><a asp-area="" asp-controller="Home" asp-action="Index"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
                 <li><a href="#"><span class="material-symbols-outlined">analytics</span><span>Timetable</span></a></li>
+                <li><a href="#"><span class="material-symbols-outlined">dashboard</span><span>View Course</span></a></li>
+                <li><a href="#"><span class="material-symbols-outlined">fact_check</span><span>View Mark</span></a></li>
+                <li><a asp-area="" asp-controller="User" asp-action="Profile"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
+
                 <li><a href="#"><span class="material-symbols-outlined">email</span><span>Contact</span></a></li>
             }
-
 
             <li>
                 <a href="javascript:document.getElementById('logout-form').submit();">
