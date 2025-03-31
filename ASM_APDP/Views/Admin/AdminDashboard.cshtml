@@ -30,6 +30,15 @@
     <body>
         <div class="menu">
             <ul class="menu-content">
+                <li>
+                    @{
+                        var username = Context.Session.GetString("Username");
+                        if (!string.IsNullOrEmpty(username))
+                        {
+                            <span class="nav-link text-dark">Welcome, @username!</span>
+                        }
+                    }
+                </li>
                 <li><a href="#"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
                 <li><a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="CourseManagement"><span class="material-symbols-outlined">book</span><span>Course Management</span></a></li>
                 <li><a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="AssignCoursesToStudents"><span class="material-symbols-outlined">assignment_ind</span><span>Assign Courses To Students</span></a></li>

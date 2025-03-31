@@ -12,7 +12,7 @@ namespace ASM_APDP.Models
         [Required]
         [StringLength(100)]
         public string CourseName { get; set; }
-
+        
         // Thêm danh sách Class và Marks để thiết lập quan hệ 1-N
         public virtual ICollection<Class> Classes { get; set; } = new List<Class>();
         public virtual ICollection<Mark> Marks { get; set; } = new List<Mark>();
