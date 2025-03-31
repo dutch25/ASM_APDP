@@ -8,14 +8,16 @@ namespace ASM_APDP.Repositories
 
         User GetUserById(int id);
         Task<User> GetUserByUsernameAsync(string username);
+        bool EmailExists(string email);
         User GetUserByUsernameAndPassword(string username, string password);
 
         User GetUserByEmail(string email);
 
-
+        User GetUserByUsername(string username);
         bool CreateUser(User user);
 
         Task<bool> UpdateUserAsync(User user);
+
 
         bool DeleteUser(int id);
     }

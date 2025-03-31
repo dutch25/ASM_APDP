@@ -30,29 +30,35 @@ namespace ASM_APDP.Controllers
         {
             if (ModelState.IsValid)
             {
-                var existingUser = _userFacade.GetUserByUsernameAndPassword(model.Username, model.Password);
-                if (existingUser != null)
-                {
-                    ModelState.AddModelError("", "Username already exists.");
-                    return View(model);
-                }
-
                 var user = new User
                 {
                     Username = model.Username,
                     Password = model.Password, // Không mã hóa mật khẩu
                     Email = model.Email,
                     CreateDate = DateTime.Now,
+                    DoB = model.DoB,
                     RoleId = 2 // Luôn là Student
                 };
 
                 bool success = _userFacade.RegisterUser(user);
-                if (success)
+                if (!success)
                 {
-                    return RedirectToAction("Login");
+                    if (_userFacade.GetUserByUsername(model.Username) != null)
+                    {
+                        ModelState.AddModelError("", "Username already exists.");
+                    }
+                    else if (_userFacade.EmailExists(model.Email))
+                    {
+                        ModelState.AddModelError("", "Email already exists.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Error creating user.");
+                    }
+                    return View(model);
                 }
 
-                ModelState.AddModelError("", "Error creating user.");
+                return RedirectToAction("Login");
             }
             return View(model);
         }
@@ -144,9 +150,15 @@ namespace ASM_APDP.Controllers
                 bool success = await _userFacade.UpdateUserProfileAsync(username, model);
                 if (success)
                 {
-                    return RedirectToAction("Profile");
+                    // Redirect to the appropriate dashboard based on the role
+                    return model.RoleId switch
+                    {
+                        1 => RedirectToAction("AdminDashboard", "Admin"),
+                        2 => RedirectToAction("Index", "Home"),
+                        3 => RedirectToAction("TeacherDashboard", "Teacher"),
+                        _ => RedirectToAction("Login")
+                    };
                 }
-
                 ModelState.AddModelError("", "Error updating user.");
             }
 
