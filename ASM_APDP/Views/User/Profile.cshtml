@@ -83,6 +83,7 @@
         <div class="profile-section">
             <h3>Basic Information</h3>
             <div class="info-box">
+                <p><strong>Full Name:</strong> @Model.FullName</p>
                 <p><strong>Username:</strong> @Model.Username</p>
                 <p><strong>Email:</strong> @Model.Email</p>
             </div>
@@ -94,6 +95,9 @@
             <div class="info-box">
                 <form asp-action="Profile" method="post">
                     <input type="hidden" asp-for="Username" />
+
+                    <label asp-for="FullName">FullName:</label>
+                    <input asp-for="FullName" type="fullname" required name="FullName">
 
                     <label asp-for="Email">Email:</label>
                     <input asp-for="Email" type="email" required name="Email">

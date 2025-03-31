@@ -14,6 +14,10 @@ namespace ASM_APDP.Models
         [StringLength(50)]
         public string Username { get; set; }
 
+
+        [Required]
+        public string FullName { get; set; }
+
         [Required]
         [StringLength(255)]
         public string Password { get; set; }
