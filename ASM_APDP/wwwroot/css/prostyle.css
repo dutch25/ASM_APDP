@@ -36,6 +36,7 @@
     width: 100%; /* Đảm bảo chiều rộng 100% */
 }
 
+    .info-box input[type="fullname"],
     .info-box input[type="text"],
     .info-box input[type="email"],
     .info-box input[type="password"] {
