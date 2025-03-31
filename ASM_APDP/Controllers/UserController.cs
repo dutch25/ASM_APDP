@@ -3,6 +3,7 @@ using ASM_APDP.Facades;
 using ASM_APDP.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 
 namespace ASM_APDP.Controllers
 {
@@ -39,7 +40,7 @@ namespace ASM_APDP.Controllers
                 var user = new User
                 {
                     Username = model.Username,
-                    Password = model.Password, // Lưu mật khẩu thô (Không mã hóa)
+                    Password = model.Password, // Không mã hóa mật khẩu
                     Email = model.Email,
                     CreateDate = DateTime.Now,
                     RoleId = 2 // Luôn là Student
@@ -75,7 +76,6 @@ namespace ASM_APDP.Controllers
                     return View(model);
                 }
 
-                // Lấy thông tin vai trò từ RoleFacade
                 var role = _roleFacade.GetRoleById(user.RoleId);
                 if (role == null || string.IsNullOrEmpty(role.RoleName) || role.RoleName != model.RoleName)
                 {
@@ -110,6 +110,7 @@ namespace ASM_APDP.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
+
         // GET: /User/Profile
         public async Task<IActionResult> Profile()
         {
@@ -128,7 +129,7 @@ namespace ASM_APDP.Controllers
             return View(model);
         }
 
-        // POST: /User/Profile
+        // ✅ Sửa lỗi cập nhật Profile
         [HttpPost]
         public async Task<IActionResult> Profile(ProfileViewModel model)
         {
@@ -141,18 +142,15 @@ namespace ASM_APDP.Controllers
                 }
 
                 bool success = await _userFacade.UpdateUserProfileAsync(username, model);
-                if (!success)
+                if (success)
                 {
-                    ModelState.AddModelError("", "Failed to update profile.");
-                    return View(model);
+                    return RedirectToAction("Profile");
                 }
 
-                TempData["SuccessMessage"] = "Profile updated successfully!";
-                return RedirectToAction("Profile");
+                ModelState.AddModelError("", "Error updating user.");
             }
 
             return View(model);
         }
-
     }
 }
