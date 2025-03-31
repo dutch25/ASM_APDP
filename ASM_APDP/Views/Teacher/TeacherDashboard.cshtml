@@ -39,20 +39,10 @@
                         }
                     }
                 </li>
-                <li><a href="#"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
+                <li><a asp-area="" asp-controller="Teacher" asp-action="TeacherDashboard"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
+                <li><a asp-area="" asp-controller="User" asp-action="Profile"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
                 <li><a href="#"><span class="material-symbols-outlined">analytics</span><span>Timetable</span></a></li>
-                <li>
-                    <a href="javascript:document.getElementById('reportmark-form').submit();">
-                        <span class="material-symbols-outlined">fact_check</span><span>Report Mark</span>
-                    </a>
-                    <form id="reportmark-form" asp-area="" asp-controller="Teacher" asp-action="ReportMark" method="get" style="display: none;"></form>
-                </li>
-                <li>
-                    <a href="javascript:document.getElementById('profile-form').submit();">
-                        <span class="material-symbols-outlined">person</span><span>Profile</span>
-                    </a>
-                    <form id="profile-form" asp-area="" asp-controller="User" asp-action="Profile" method="get" style="display: none;"></form>
-                </li>
+                <li><a asp-area="" asp-controller="Teacher" asp-action="ReportMark"><span class="material-symbols-outlined">person</span><span>Report Mark</span></a></li>
                 <li><a href="#"><span class="material-symbols-outlined">email</span><span>Contact</span></a></li>
                 <li>
                     <a href="javascript:document.getElementById('logout-form').submit();">

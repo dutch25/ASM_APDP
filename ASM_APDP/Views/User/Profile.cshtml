@@ -2,6 +2,7 @@
 
 @{
     Layout = null;
+    var roleName = Context.Session.GetString("RoleName");
 }
 
 <!DOCTYPE html>
@@ -20,16 +21,44 @@
     <div class="menu">
         <ul class="menu-content">
             <li class="nav-item">
-                @if (!string.IsNullOrEmpty(Model.Username))
-                {
-                    <span class="nav-link text-dark">Welcome, @Model.Username!</span>
+                @{
+                    var username = Context.Session.GetString("Username");
+                    if (!string.IsNullOrEmpty(username))
+                    {
+                        <span>Welcome, @username!</span>
+                    }
                 }
             </li>
-            <li><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
-            <li><a href="#"><span class="material-symbols-outlined">dashboard</span><span>View Course</span></a></li>
-            <li><a href="#"><span class="material-symbols-outlined">analytics</span><span>Timetable</span></a></li>
-            <li><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Profile"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
-            <li><a href="#"><span class="material-symbols-outlined">email</span><span>Contact</span></a></li>
+           
+
+            @if (roleName == "Admin")
+            {
+                <li><a asp-area="" asp-controller="Admin" asp-action="AdminDashboard"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
+                <li><a asp-area="" asp-controller="Admin" asp-action="CourseManagement"><span class="material-symbols-outlined">book</span><span>Course Management</span></a></li>
+                <li><a asp-area="" asp-controller="Admin" asp-action="AssignCoursesToStudents"><span class="material-symbols-outlined">assignment_ind</span><span>Assign Courses To Students</span></a></li>
+                <li><a asp-area="" asp-controller="User" asp-action="Profile"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
+                <li><a href="#"><span class="material-symbols-outlined">email</span><span>Contact</span></a></li>
+
+            }
+            else if (roleName == "Teacher")
+            {
+                <li><a asp-area="" asp-controller="Teacher" asp-action="TeacherDashboard"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
+                <li><a asp-area="" asp-controller="User" asp-action="Profile"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
+                <li><a href="#"><span class="material-symbols-outlined">analytics</span><span>Timetable</span></a></li>
+                <li><a asp-area="" asp-controller="Teacher" asp-action="ReportMark"><span class="material-symbols-outlined">person</span><span>Report Mark</span></a></li>
+                <li><a href="#"><span class="material-symbols-outlined">email</span><span>Contact</span></a></li>
+
+            }
+            else if (roleName == "Student")
+            {
+                <li><a href="#"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
+                <li><a asp-area="" asp-controller="User" asp-action="Profile"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
+                <li><a href="#"><span class="material-symbols-outlined">dashboard</span><span>View Course</span></a></li>
+                <li><a href="#"><span class="material-symbols-outlined">analytics</span><span>Timetable</span></a></li>
+                <li><a href="#"><span class="material-symbols-outlined">email</span><span>Contact</span></a></li>
+            }
+
+
             <li>
                 <a href="javascript:document.getElementById('logout-form').submit();">
                     <span class="material-symbols-outlined">logout</span><span>Logout</span>

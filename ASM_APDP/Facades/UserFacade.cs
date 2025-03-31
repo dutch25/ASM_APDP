@@ -35,7 +35,24 @@ namespace ASM_APDP.Facades
 
         public bool RegisterUser(User user)
         {
+            // Check if username already exists
+            if (_userRepository.GetUserByUsername(user.Username) != null)
+            {
+                return false; // Username already exists
+            }
+
+            // Check if email already exists
+            if (_userRepository.EmailExists(user.Email))
+            {
+                return false; // Email already exists
+            }
+
             return _userRepository.CreateUser(user);
+        }
+
+        public User GetUserByUsername(string username)
+        {
+            return _userRepository.GetUserByUsername(username);
         }
 
         public async Task<bool> UpdateUser(User user)
@@ -43,6 +60,10 @@ namespace ASM_APDP.Facades
             return await _userRepository.UpdateUserAsync(user);
         }
 
+        public bool EmailExists(string email)
+        {
+            return _userRepository.EmailExists(email);
+        }
 
         public bool DeleteUser(int id)
         {
