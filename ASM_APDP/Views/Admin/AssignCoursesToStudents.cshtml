@@ -159,47 +159,49 @@
     </div>
 
     <div class="container">
-        <h2>Assign Courses To Students</h2>
-
+        <h1>Assign Courses To Students</h1>
         <!-- Display Success or Error Message -->
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <div class="alert alert-success">
-                @TempData["SuccessMessage"]
-            </div>
-        }
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <div class="alert alert-danger">
-                @TempData["ErrorMessage"]
-            </div>
-        }
+        <div class="form-section">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
 
-        <form asp-action="AssignStudentToClass" method="post">
-            <div class="form-group">
-                <label for="studentId">Student ID:</label>
-                <input asp-for="StudentId" class="form-control" required />
-            </div>
+            <form asp-action="AssignStudentToClass" method="post">
+                <div class="form-group">
+                    <label for="studentId">Student ID:</label>
+                    <input asp-for="StudentId" class="form-control" required />
+                </div>
 
-            <div class="form-group">
-                <label for="className">Class Name:</label>
-                <input asp-for="ClassName" class="form-control" required />
-            </div>
+                <div class="form-group">
+                    <label for="className">Class Name:</label>
+                    <input asp-for="ClassName" class="form-control" required />
+                </div>
 
-            <div class="form-group">
-                <label for="courseId">Select Course:</label>
-                <select asp-for="CourseId" class="form-control" required>
-                    <option value="">-- Select Course --</option>
-                    @foreach (var course in ViewBag.Courses)
-                    {
-                        <option value="@course.CourseID">@course.CourseName</option>
-                    }
-                </select>
-            </div>
+                <div class="form-group">
+                    <label for="courseId">Select Course:</label>
+                    <select asp-for="CourseId" class="form-control" required>
+                        <option value="">-- Select Course --</option>
+                        @foreach (var course in ViewBag.Courses)
+                        {
+                            <option value="@course.CourseID">@course.CourseName</option>
+                        }
+                    </select>
+                </div>
 
-            <button type="submit" class="btn btn-primary">Assign</button>
-        </form>
-
+                <button type="submit" class="btn btn-primary">Assign</button>
+                <button type="button" class="custom-button" id="back" onclick="window.location.href='@Url.Action("ViewAllAssignCourses", "Admin")'">View All</button>
+                @* <button type="button" id="view-all-assign-courses" asp-controller="Admin" asp-action="ViewAllAssignCourses">View All</button> *@
+            </form>
+        </div>
            
     </div>
 
