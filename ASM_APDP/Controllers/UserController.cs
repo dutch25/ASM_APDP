@@ -156,7 +156,7 @@ namespace ASM_APDP.Controllers
                         1 => RedirectToAction("AdminDashboard", "Admin"),
                         2 => RedirectToAction("Index", "Home"),
                         3 => RedirectToAction("TeacherDashboard", "Teacher"),
-                        _ => RedirectToAction("Login")
+                        _ => RedirectToAction("Profile", "User")
                     };
                 }
                 ModelState.AddModelError("", "Error updating user.");
