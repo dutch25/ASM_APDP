@@ -10,7 +10,9 @@ namespace ASM_APDP.Facades
         User GetUserByUsernameAndPassword(string username, string password);
 
         User GetUserByEmail(string email);
+        User GetUserByUsername(string username);
 
+        bool EmailExists(string email);
 
         bool RegisterUser(User user);
         Task<bool> UpdateUser(User user);

@@ -54,7 +54,15 @@ namespace ASM_APDP.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
+        public bool EmailExists(string email)
+        {
+            return _context.Users.Any(u => u.Email == email);
+        }
 
+        public User GetUserByUsername(string username)
+        {
+            return _context.Users.FirstOrDefault(u => u.Username == username);
+        }
 
         public bool DeleteUser(int id)
         {

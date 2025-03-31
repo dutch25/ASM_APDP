@@ -15,5 +15,8 @@ namespace ASM_APDP.ViewModels
         [Required]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime? DoB { get; set; }
     }
 }
