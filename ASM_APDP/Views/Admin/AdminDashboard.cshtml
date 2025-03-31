@@ -30,12 +30,13 @@
     <body>
         <div class="menu">
             <ul class="menu-content">
-                <li class="nav-item">
+                <li>
                     @{
                         var username = Context.Session.GetString("Username");
                         if (!string.IsNullOrEmpty(username))
                         {
                             <span>Welcome, @username!</span>
+                            <span class="nav-link text-dark">Welcome, @username!</span>
                         }
                     }
                 </li>
