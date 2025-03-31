@@ -2,6 +2,7 @@
 using ASM_APDP.Models;
 using ASM_APDP.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace ASM_APDP.Controllers
@@ -29,19 +30,22 @@ namespace ASM_APDP.Controllers
             return View();
         }
 
-        public IActionResult CourseManagement()
-        {
-            return View();
-        }
+        
 
         public IActionResult ViewAllAssignCourses()
         {
             return View();
         }
-        public IActionResult ViewAllCourses()
+        
+
+        public async Task<IActionResult> ViewAllCourses()
         {
-            return View();
+            var courses = await Task.Run(() => _courseFacade.GetAllCourses());
+            return View(courses);
         }
+
+
+
 
         public IActionResult AssignCoursesToStudents()
         {
@@ -53,6 +57,8 @@ namespace ASM_APDP.Controllers
             ViewBag.Courses = courses;
             return View();
         }
+
+
 
         [HttpPost]
         public IActionResult AssignStudentToClass(AssignCoursesToStudentsViewModel model)
@@ -112,5 +118,46 @@ namespace ASM_APDP.Controllers
             TempData["ErrorMessage"] = "Error assigning student to class.";
             return RedirectToAction("AssignCoursesToStudents");
         }
+
+        public IActionResult CourseManagement()
+        {
+            var model = new AddCourseViewModel();
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult AddCourse()
+        {
+            var model = new AddCourseViewModel();
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddCourse(AddCourseViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var course = new Course
+                {
+                    CourseName = model.CourseName
+                };
+
+                var isCreated = _courseFacade.CreateCourse(course);
+                if (isCreated)
+                {
+                    TempData["SuccessMessage"] = "Course added successfully.";
+                    return RedirectToAction("ViewAllCourses");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Error adding course.";
+                }
+            }
+            return View(model);
+        }
+
     }
+
+
 }
+

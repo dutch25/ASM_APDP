@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Course Management";
 }
-@model ASM_APDP.Models.User
+@model ASM_APDP.ViewModels.AddCourseViewModel
 @{
     Layout = null;
 }
@@ -178,11 +178,11 @@
         <div class="form-section">
             <h2 style="text-align: center; color:black">Add Course</h2>
             <br>
-            <form id="">
+            <form asp-action="AddCourse" method="post">
                 <div style="display: flex; flex-direction: column; gap: 10px;">
                     <label for="course-name" style="color:black">Course Name</label>
                     <div style="display: flex; align-items: center;">
-                        <input type="text" id="course-name" placeholder="Enter Course Name" style="flex: 1;">
+                        <input type="text" id="CourseName" value="@Model.CourseName" required placeholder="Enter Course Name" style="flex: 1;">
                         <button type="submit" style="min-width: 80px; height: 100%;">Add</button>
                     </div>
                 </div>
