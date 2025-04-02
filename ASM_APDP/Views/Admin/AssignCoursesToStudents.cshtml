@@ -1,17 +1,16 @@
 ﻿@model ASM_APDP.ViewModels.AssignCoursesToStudentsViewModel
-
 @{
     Layout = null;
 }
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
     <link rel="stylesheet" href="~/css/styleIndex.css" asp-append-version="true">
+    <link href="~/css/markstyle.css" rel="stylesheet" />
     <title>Assign Courses to Students</title>
     <style>
         * {
@@ -45,11 +44,11 @@
         .container {
             max-width: 1000px;
             margin: 20px auto;
-            padding: 20px;
+            padding: 40px;
             border-radius: 10px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            background-color: rgba(255, 255, 255, 0.8); /* Nền trắng mờ */
-            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            width: 90%;
         }
 
         h1 {
@@ -59,18 +58,13 @@
         }
 
         .form-section {
-            margin-bottom: 20px;
-        }
-
-        .text-center h2 {
-            color: #4a9da6;
-            margin-bottom: 20px;
+            margin-bottom: 40px;
         }
 
         form {
             display: flex;
-            flex-direction: column; /* Sắp xếp dọc */
-            gap: 15px; /* Khoảng cách giữa các trường */
+            flex-direction: column;
+            gap: 15px;
         }
 
         label {
@@ -100,42 +94,99 @@
                 background-color: #5ab6c8;
             }
 
-        .center-button {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px; /* Khoảng cách giữa các nút */
+        .report-panel h2 {
+            color: #333;
+            margin-bottom: 20px;
         }
 
-            .center-button button {
-                flex: 1; /* Kích thước các nút bằng nhau */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .report-table th, .report-table td {
+                padding: 10px;
+                border: 1px solid #ccc;
+                text-align: left;
             }
 
-        .button-container {
-            margin-top: 20px; /* Tạo khoảng cách phía trên */
-        }
-
-        .custom-button {
-            background-color: #4a9da6;
-            color: white;
-            font-size: 16px;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            width: 100%; /* Chiều rộng nút */
-        }
-
-            .custom-button:hover {
+            .report-table th {
                 background-color: #4a9da6;
+                color: white;
             }
-    </style>
-</head>
 
+        .alert-success {
+            color: green;
+            margin-bottom: 10px;
+        }
+
+        .alert-danger {
+            color: red;
+            margin-bottom: 10px;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+
+        .validation-summary {
+            color: red;
+            margin-bottom: 10px;
+        }
+
+        .action-button {
+            color: blue;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: color 0.3s ease;
+        }
+
+            .action-button:hover {
+                color: red;
+            }
+
+        .edit-form {
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+    <script>
+        function deleteStudentFromClass(classId) {
+            if (confirm("Are you sure you want to remove this student from the class?")) {
+                var form = document.createElement("form");
+                form.method = "post";
+                form.action = "/Admin/DeleteStudentFromClass";
+
+                var input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "classId";
+                input.value = classId;
+                form.appendChild(input);
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function showEditForm(classId, studentId, className, courseId) {
+            var editForm = document.getElementById("edit-form-" + classId);
+            if (editForm.style.display === "none" || editForm.style.display === "") {
+                editForm.style.display = "block";
+                document.getElementById("edit-student-id-" + classId).value = studentId;
+                document.getElementById("edit-class-name-" + classId).value = className;
+                document.getElementById("edit-course-id-" + classId).value = courseId;
+            } else {
+                editForm.style.display = "none";
+            }
+        }
+    </script>
+</head>
 <body>
     <div class="menu">
         <ul class="menu-content">
-            <li class="">
+            <li>
                 @{
                     var username = Context.Session.GetString("Username");
                     if (!string.IsNullOrEmpty(username))
@@ -144,69 +195,154 @@
                     }
                 }
             </li>
-            <li><a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="AdminDashBoard"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
-            <li><a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="CourseManagement"><span class="material-symbols-outlined">book</span><span>Course Management</span></a></li>
-            <li><a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="AssignCoursesToStudents"><span class="material-symbols-outlined">assignment_ind</span><span>Assign Courses To Students</span></a></li>
-            <li><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Profile"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
+            <li><a class="nav-link text-dark" asp-controller="Admin" asp-action="AdminDashboard"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
+            <li><a class="nav-link text-dark" asp-controller="Admin" asp-action="CourseManagement"><span class="material-symbols-outlined">book</span><span>Course Management</span></a></li>
+            <li><a class="nav-link text-dark" asp-controller="Admin" asp-action="AssignCoursesToStudents"><span class="material-symbols-outlined">assignment_ind</span><span>Assign Courses To Students</span></a></li>
+            <li><a class="nav-link text-dark" asp-controller="User" asp-action="Profile"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
             <li><a href="#"><span class="material-symbols-outlined">email</span><span>Contact</span></a></li>
             <li>
                 <a href="javascript:document.getElementById('logout-form').submit();">
                     <span class="material-symbols-outlined">logout</span><span>Logout</span>
                 </a>
-                <form id="logout-form" asp-area="" asp-controller="User" asp-action="Logout" method="post" style="display: none;"></form>
+                <form id="logout-form" asp-controller="User" asp-action="Logout" method="post" style="display: none;"></form>
             </li>
         </ul>
     </div>
 
     <div class="container">
         <h1>Assign Courses To Students</h1>
-        <!-- Display Success or Error Message -->
+
+        <!-- Assign Course Form -->
         <div class="form-section">
             @if (TempData["SuccessMessage"] != null)
             {
-                <div class="alert alert-success">
-                    @TempData["SuccessMessage"]
-                </div>
+                <div class="alert-success">@TempData["SuccessMessage"]</div>
             }
             @if (TempData["ErrorMessage"] != null)
             {
-                <div class="alert alert-danger">
-                    @TempData["ErrorMessage"]
-                </div>
+                <div class="alert-danger">@TempData["ErrorMessage"]</div>
             }
+            <div class="validation-summary">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            </div>
 
             <form asp-action="AssignStudentToClass" method="post">
-                <div class="form-group">
-                    <label for="studentId">Student ID:</label>
-                    <input asp-for="StudentId" class="form-control" required />
+                <div>
+                    <label for="studentId">Select Student:</label>
+                    <select asp-for="StudentId" required>
+                        <option value="">-- Select Student --</option>
+                        @foreach (var student in ViewBag.Students as IEnumerable<ASM_APDP.Models.User> ?? Enumerable.Empty<ASM_APDP.Models.User>())
+                        {
+                            <option value="@student.Id">@student.FullName (ID: @student.Id)</option>
+                        }
+                    </select>
+                    <span asp-validation-for="StudentId" class="text-danger"></span>
                 </div>
-
-                <div class="form-group">
+                <div>
                     <label for="className">Class Name:</label>
-                    <input asp-for="ClassName" class="form-control" required />
+                    <input asp-for="ClassName" required placeholder="Enter or Select Class Name" list="classList" />
+                    <datalist id="classList">
+                        @foreach (var classItem in ViewBag.Classes as IEnumerable<ASM_APDP.Models.Class> ?? Enumerable.Empty<ASM_APDP.Models.Class>())
+                        {
+                            <option value="@classItem.ClassName" />
+                        }
+                    </datalist>
+                    <span asp-validation-for="ClassName" class="text-danger"></span>
                 </div>
-
-                <div class="form-group">
+                <div>
                     <label for="courseId">Select Course:</label>
-                    <select asp-for="CourseId" class="form-control" required>
+                    <select asp-for="CourseId" required>
                         <option value="">-- Select Course --</option>
-                        @foreach (var course in ViewBag.Courses)
+                        @foreach (var course in ViewBag.Courses as IEnumerable<ASM_APDP.Models.Course> ?? Enumerable.Empty<ASM_APDP.Models.Course>())
                         {
                             <option value="@course.CourseID">@course.CourseName</option>
                         }
                     </select>
+                    <span asp-validation-for="CourseId" class="text-danger"></span>
                 </div>
-
-                <button type="submit" class="btn btn-primary">Assign</button>
-                <button type="button" class="custom-button" id="back" onclick="window.location.href='@Url.Action("ViewAllAssignCourses", "Admin")'">View All</button>
-                @* <button type="button" id="view-all-assign-courses" asp-controller="Admin" asp-action="ViewAllAssignCourses">View All</button> *@
+                <button type="submit">Assign</button>
             </form>
         </div>
-           
+
+        <!-- Assigned Courses List -->
+        <div class="report-panel">
+            <h2>All Assigned Students</h2>
+            @{
+                var classes = ViewBag.Classes as IEnumerable<ASM_APDP.Models.Class> ?? Enumerable.Empty<ASM_APDP.Models.Class>();
+                var students = ViewBag.Students as IEnumerable<ASM_APDP.Models.User> ?? Enumerable.Empty<ASM_APDP.Models.User>();
+                var coursesList = ViewBag.Courses as IEnumerable<ASM_APDP.Models.Course> ?? Enumerable.Empty<ASM_APDP.Models.Course>();
+
+                if (classes.Any())
+                {
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Full Name</th>
+                                <th>Class</th>
+                                <th>Course Name</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var classItem in classes)
+                            {
+                                var student = students.FirstOrDefault(s => s.Id == classItem.UserID);
+                                var course = coursesList.FirstOrDefault(c => c.CourseID == classItem.CourseID);
+                                if (student != null && course != null)
+                                {
+                                    <tr>
+                                        <td>@student.Id</td>
+                                        <td>@student.FullName</td>
+                                        <td>@classItem.ClassName</td>
+                                        <td>@course.CourseName</td>
+                                        <td>
+                                            <span class="action-button" onclick="showEditForm(@classItem.ClassID, @student.Id, '@classItem.ClassName', @course.CourseID)">Update</span>
+                                            <span class="action-button" onclick="deleteStudentFromClass(@classItem.ClassID)">Delete</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5">
+                                            <div id="edit-form-@classItem.ClassID" class="edit-form">
+                                                <form asp-action="UpdateStudentInClass" method="post">
+                                                    <input type="hidden" name="ClassId" value="@classItem.ClassID" />
+                                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                                        <select id="edit-student-id-@classItem.ClassID" name="StudentId" required>
+                                                            <option value="">-- Select Student --</option>
+                                                            @foreach (var studentOption in ViewBag.Students as IEnumerable<ASM_APDP.Models.User> ?? Enumerable.Empty<ASM_APDP.Models.User>())
+                                                            {
+                                                                <option value="@studentOption.Id">@studentOption.FullName (ID: @studentOption.Id)</option>
+                                                            }
+                                                        </select>
+                                                        <input type="text" id="edit-class-name-@classItem.ClassID" name="ClassName" required placeholder="Enter or Select Class Name" list="classList" />
+                                                        <select id="edit-course-id-@classItem.ClassID" name="CourseId" required>
+                                                            <option value="">-- Select Course --</option>
+                                                            @foreach (var courseOption in ViewBag.Courses as IEnumerable<ASM_APDP.Models.Course> ?? Enumerable.Empty<ASM_APDP.Models.Course>())
+                                                            {
+                                                                <option value="@courseOption.CourseID">@courseOption.CourseName</option>
+                                                            }
+                                                        </select>
+                                                        <button type="submit">Save</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="no-data">No students have been assigned yet.</div>
+                }
+            }
+        </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 </body>
-
 </html>
