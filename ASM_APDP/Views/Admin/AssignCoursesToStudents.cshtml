@@ -181,6 +181,40 @@
                 editForm.style.display = "none";
             }
         }
+
+        function updateClassId() {
+            var classNameInput = document.getElementById("ClassName");
+            var classIdInput = document.getElementById("ClassId");
+            var classes = @Html.Raw(ViewBag.ClassesJson);
+
+            console.log("Classes available:", classes); // Debug: Log available classes
+            console.log("Selected ClassName:", classNameInput.value); // Debug: Log selected value
+
+            var selectedClass = classes.find(c => c.className.trim() === classNameInput.value.trim());
+            if (selectedClass) {
+                classIdInput.value = selectedClass.classID;
+                console.log("Set ClassId to:", selectedClass.classID); // Debug: Confirm ClassId
+            } else {
+                classIdInput.value = "";
+                console.log("No matching class found, ClassId cleared"); // Debug: No match
+            }
+        }
+
+        function validateForm(event) {
+            updateClassId(); // Ensure ClassId is updated before validation
+            var studentId = document.getElementById("StudentId").value;
+            var classId = document.getElementById("ClassId").value;
+            var courseId = document.getElementById("CourseId").value;
+
+            console.log("Form values before submission - StudentId:", studentId, "ClassId:", classId, "CourseId:", courseId); // Debug: Log all values
+
+            if (!studentId || !classId || !courseId || classId === "0" || classId === "") {
+                alert("Please ensure all fields are filled and a valid class is selected from the list.");
+                event.preventDefault(); // Prevent form submission
+                return false;
+            }
+            return true;
+        }
     </script>
 </head>
 <body>
@@ -226,10 +260,10 @@
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             </div>
 
-            <form asp-action="AssignStudentToClass" method="post">
+            <form asp-action="AssignStudentToClass" method="post" onsubmit="return validateForm(event)">
                 <div>
-                    <label for="studentId">Select Student:</label>
-                    <select asp-for="StudentId" required>
+                    <label for="StudentId">Select Student:</label>
+                    <select asp-for="StudentId" id="StudentId" required>
                         <option value="">-- Select Student --</option>
                         @foreach (var student in ViewBag.Students as IEnumerable<ASM_APDP.Models.User> ?? Enumerable.Empty<ASM_APDP.Models.User>())
                         {
@@ -239,19 +273,20 @@
                     <span asp-validation-for="StudentId" class="text-danger"></span>
                 </div>
                 <div>
-                    <label for="className">Class Name:</label>
-                    <input asp-for="ClassName" required placeholder="Enter or Select Class Name" list="classList" />
+                    <label for="ClassName">Class Name:</label>
+                    <input asp-for="ClassName" id="ClassName" required placeholder="Enter or Select Class Name" list="classList" oninput="updateClassId()" />
                     <datalist id="classList">
                         @foreach (var classItem in ViewBag.Classes as IEnumerable<ASM_APDP.Models.Class> ?? Enumerable.Empty<ASM_APDP.Models.Class>())
                         {
                             <option value="@classItem.ClassName" />
                         }
                     </datalist>
+                    <input type="hidden" asp-for="ClassId" id="ClassId" />
                     <span asp-validation-for="ClassName" class="text-danger"></span>
                 </div>
                 <div>
-                    <label for="courseId">Select Course:</label>
-                    <select asp-for="CourseId" required>
+                    <label for="CourseId">Select Course:</label>
+                    <select asp-for="CourseId" id="CourseId" required>
                         <option value="">-- Select Course --</option>
                         @foreach (var course in ViewBag.Courses as IEnumerable<ASM_APDP.Models.Course> ?? Enumerable.Empty<ASM_APDP.Models.Course>())
                         {

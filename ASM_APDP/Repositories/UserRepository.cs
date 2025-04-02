@@ -17,7 +17,7 @@ namespace ASM_APDP.Repositories
 
         public IEnumerable<User> GetAllUsers()
         {
-            return _context.Users;
+            return _context.Users.Include(u => u.Role).ToList();
         }
 
         public User GetUserById(int id)
