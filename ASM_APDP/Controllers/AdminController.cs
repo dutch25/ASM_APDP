@@ -2,8 +2,8 @@
 using ASM_APDP.Models;
 using ASM_APDP.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace ASM_APDP.Controllers
 {
@@ -30,42 +30,38 @@ namespace ASM_APDP.Controllers
             return View();
         }
 
-        
-
         public IActionResult ViewAllAssignCourses()
         {
             return View();
         }
-        
 
         public async Task<IActionResult> ViewAllCourses()
         {
-            var courses = await Task.Run(() => _courseFacade.GetAllCourses());
+            var courses = await Task.Run(() => _courseFacade.GetAllCourses().ToList());
             return View(courses);
         }
-
-
-
-
+        // GET: AssignCoursesToStudents
         public IActionResult AssignCoursesToStudents()
         {
-            var classes = _classFacade.GetAllClasses();
-            var students = _userFacade.GetAllUsers();
-            var courses = _courseFacade.GetAllCourses();
+            var classes = _classFacade.GetAllClasses().ToList();
+            var students = _userFacade.GetAllUsers().ToList();
+            var courses = _courseFacade.GetAllCourses().ToList();
             ViewBag.Classes = classes;
             ViewBag.Students = students;
             ViewBag.Courses = courses;
-            return View();
+            return View(new AssignCoursesToStudentsViewModel());
         }
 
-
-
+        // POST: AssignStudentToClass (Add new assignment)
         [HttpPost]
         public IActionResult AssignStudentToClass(AssignCoursesToStudentsViewModel model)
         {
+            // Log for debugging
+            System.Diagnostics.Debug.WriteLine($"Assign: StudentId: {model.StudentId}, ClassName: {model.ClassName}, CourseId: {model.CourseId}");
+
             if (model.StudentId <= 0 || string.IsNullOrEmpty(model.ClassName) || model.CourseId <= 0)
             {
-                TempData["ErrorMessage"] = "Invalid input data.";
+                TempData["ErrorMessage"] = "Invalid input data. Ensure all fields are filled.";
                 return RedirectToAction("AssignCoursesToStudents");
             }
 
@@ -76,10 +72,116 @@ namespace ASM_APDP.Controllers
                 return RedirectToAction("AssignCoursesToStudents");
             }
 
-            var existingClass = _classFacade.GetClassByName(model.ClassName);
-            if (existingClass == null)
+            var course = _courseFacade.GetCourseById(model.CourseId);
+            if (course == null)
+            {
+                TempData["ErrorMessage"] = "Course not found.";
+                return RedirectToAction("AssignCoursesToStudents");
+            }
+
+            // Check for duplicate assignment
+            var isAlreadyAssigned = _classFacade.GetAllClasses()
+                .Any(c => c.UserID == model.StudentId && c.CourseID == model.CourseId && c.ClassName == model.ClassName);
+
+            if (isAlreadyAssigned)
+            {
+                TempData["ErrorMessage"] = "Student is already assigned to this class and course.";
+                return RedirectToAction("AssignCoursesToStudents");
+            }
+
+            // Create new class assignment (no need for existing class check)
+            var newClass = new Class
+            {
+                ClassName = model.ClassName,
+                UserID = model.StudentId,
+                CourseID = model.CourseId
+            };
+
+            bool isAssigned = _classFacade.CreateClass(newClass);
+            if (isAssigned)
+            {
+                TempData["SuccessMessage"] = "Student assigned successfully.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Error assigning student to class.";
+            }
+
+            return RedirectToAction("AssignCoursesToStudents");
+        }
+
+        // POST: DeleteStudentFromClass
+        [HttpPost]
+        public IActionResult DeleteStudentFromClass(int classId)
+        {
+            var classEntity = _classFacade.GetClassById(classId);
+            if (classEntity != null)
+            {
+                var isDeleted = _classFacade.DeleteClass(classId);
+                if (isDeleted)
+                {
+                    TempData["SuccessMessage"] = "Student removed from class successfully.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Error removing student from class.";
+                }
+            }
+            else
             {
                 TempData["ErrorMessage"] = "Class not found.";
+            }
+            return RedirectToAction("AssignCoursesToStudents");
+        }
+
+        // GET: UpdateStudentInClass
+        [HttpGet]
+        public IActionResult UpdateStudentInClass(int classId)
+        {
+            var classEntity = _classFacade.GetClassById(classId);
+            if (classEntity == null)
+            {
+                TempData["ErrorMessage"] = "Class not found.";
+                return RedirectToAction("AssignCoursesToStudents");
+            }
+
+            var model = new AssignCoursesToStudentsViewModel
+            {
+                ClassId = classId,
+                StudentId = classEntity.UserID ?? 0,
+                ClassName = classEntity.ClassName,
+                CourseId = classEntity.CourseID ?? 0
+            };
+            ViewBag.Classes = _classFacade.GetAllClasses().ToList();
+            ViewBag.Students = _userFacade.GetAllUsers().ToList();
+            ViewBag.Courses = _courseFacade.GetAllCourses().ToList();
+            return View(model);
+        }
+
+        // POST: UpdateStudentInClass
+        [HttpPost]
+        public IActionResult UpdateStudentInClass(AssignCoursesToStudentsViewModel model)
+        {
+            // Log for debugging
+            System.Diagnostics.Debug.WriteLine($"Update: ClassId: {model.ClassId}, StudentId: {model.StudentId}, ClassName: {model.ClassName}, CourseId: {model.CourseId}");
+
+            if (model.ClassId == null || model.StudentId <= 0 || string.IsNullOrEmpty(model.ClassName) || model.CourseId <= 0)
+            {
+                TempData["ErrorMessage"] = "Invalid input data. Ensure all fields are filled.";
+                return RedirectToAction("AssignCoursesToStudents");
+            }
+
+            var classEntity = _classFacade.GetClassById(model.ClassId.Value);
+            if (classEntity == null)
+            {
+                TempData["ErrorMessage"] = "Class not found.";
+                return RedirectToAction("AssignCoursesToStudents");
+            }
+
+            var student = _userFacade.GetUserById(model.StudentId);
+            if (student == null)
+            {
+                TempData["ErrorMessage"] = "Student not found.";
                 return RedirectToAction("AssignCoursesToStudents");
             }
 
@@ -90,52 +192,37 @@ namespace ASM_APDP.Controllers
                 return RedirectToAction("AssignCoursesToStudents");
             }
 
-            // Ensure the student is not already assigned to the class and course
-            var isAlreadyAssigned = _classFacade.GetAllClasses()
-                .Any(c => c.UserID == model.StudentId && c.CourseID == model.CourseId && c.ClassName == model.ClassName);
+            classEntity.UserID = model.StudentId;
+            classEntity.ClassName = model.ClassName;
+            classEntity.CourseID = model.CourseId;
 
-            if (isAlreadyAssigned)
+            var isUpdated = _classFacade.UpdateClassAsync(classEntity).Result;
+            if (isUpdated)
             {
-                TempData["ErrorMessage"] = "Student is already assigned to this class and course.";
-                return RedirectToAction("AssignCoursesToStudents");
+                TempData["SuccessMessage"] = "Student updated successfully.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Error updating student.";
             }
 
-            // Create a new Class entity to avoid overwriting existing data
-            var newClass = new Class
-            {
-                ClassName = existingClass.ClassName,
-                UserID = model.StudentId,
-                CourseID = model.CourseId
-            };
-
-            bool isAssigned = _classFacade.CreateClass(newClass);
-            if (isAssigned)
-            {
-                TempData["SuccessMessage"] = "Student assigned successfully.";
-                return RedirectToAction("AssignCoursesToStudents");
-            }
-
-            TempData["ErrorMessage"] = "Error assigning student to class.";
             return RedirectToAction("AssignCoursesToStudents");
         }
-
         public IActionResult CourseManagement()
         {
-            var model = new AddCourseViewModel();
-            model.Courses = _courseFacade.GetAllCourses().ToList();
+            var model = new AddCourseViewModel
+            {
+                Courses = _courseFacade.GetAllCourses().ToList()
+            };
             return View(model);
         }
-
-
 
         [HttpGet]
         public IActionResult AddCourse()
         {
-            var model = new AddCourseViewModel();
-            return View(model);
+            return View(new AddCourseViewModel());
         }
 
-        [HttpPost]
         [HttpPost]
         public async Task<IActionResult> AddCourse(AddCourseViewModel model)
         {
@@ -184,7 +271,6 @@ namespace ASM_APDP.Controllers
             return RedirectToAction("CourseManagement");
         }
 
-        // Thêm vào phần GET để hiển thị form update
         [HttpGet]
         public IActionResult UpdateCourse(int courseId)
         {
@@ -204,7 +290,6 @@ namespace ASM_APDP.Controllers
             return View(model);
         }
 
-        // Thêm vào phần POST để xử lý update
         [HttpPost]
         public async Task<IActionResult> UpdateCourse(AddCourseViewModel model)
         {
@@ -232,8 +317,5 @@ namespace ASM_APDP.Controllers
             model.Courses = _courseFacade.GetAllCourses().ToList();
             return View("CourseManagement", model);
         }
-
     }
-
 }
-

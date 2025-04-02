@@ -15,7 +15,7 @@ namespace ASM_APDP.Models
 
         // Cho phép UserID nullable để tránh lỗi khi User bị xóa
         public int? UserID { get; set; }
-        public int CourseID { get; set; }
+        public int? CourseID { get; set; }
 
         [ForeignKey("UserID")]
         public virtual User User { get; set; }
