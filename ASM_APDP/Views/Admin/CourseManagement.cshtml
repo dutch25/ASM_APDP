@@ -88,53 +88,18 @@
             color: white;
             cursor: pointer;
             font-size: 16px;
-            padding: 15px; /* Đảm bảo nút có cùng chiều cao với textbox */
-            border: none; /* Bỏ viền */
+            padding: 15px;
+            border: none;
             border-radius: 5px;
             transition: background-color 0.3s ease;
-            min-width: 80px; /* Đặt chiều rộng tối thiểu */
-            height: 100%; /* Đặt chiều cao của nút bằng chiều cao của textbox */
-            margin-left: 10px; /* Khoảng cách giữa textbox và nút */
+            min-width: 80px;
+            height: 100%;
+            margin-left: 10px;
         }
 
             button:hover {
                 background-color: #5ab6c8;
             }
-
-        .center-button {
-            display: flex;
-            justify-content: center; /* Căn giữa nút */
-            gap: 20px; /* Khoảng cách giữa các nút */
-        }
-
-        .button-container {
-            display: flex; /* Sử dụng flexbox */
-            justify-content: flex-start; /* Căn trái */
-            margin-top: 20px;
-        }
-
-        .custom-button {
-            background-color: #4a9da6; /* Màu nền xanh */
-            color: white; /* Màu chữ */
-            padding: 10px 20px; /* Khoảng cách bên trong nút */
-            border: none; /* Loại bỏ viền */
-            border-radius: 5px; /* Bo tròn góc */
-            font-size: 16px; /* Kích thước chữ */
-            cursor: pointer; /* Thay đổi con trỏ khi hover */
-            text-align: center;
-            display: inline-block;
-        }
-
-            .custom-button:hover {
-                background-color: #5ab6c8; /* Hiệu ứng khi hover */
-            }
-
-        input[type="text"] {
-            padding: 10px; /* Khoảng cách bên trong */
-            border: 1px solid #ccc; /* Viền */
-            border-radius: 5px; /* Bo tròn góc */
-            font-size: 16px; /* Kích thước chữ */
-        }
 
         .action-button {
             color: blue;
@@ -147,6 +112,10 @@
                 color: red;
             }
 
+        .edit-form {
+            display: none;
+            margin-top: 10px;
+        }
     </style>
     <script>
         function deleteCourse(courseId) {
@@ -163,6 +132,16 @@
 
                 document.body.appendChild(form);
                 form.submit();
+            }
+        }
+
+        function showEditForm(courseId, courseName) {
+            var editForm = document.getElementById("edit-form-" + courseId);
+            if (editForm.style.display === "none" || editForm.style.display === "") {
+                editForm.style.display = "block";
+                document.getElementById("edit-course-name-" + courseId).value = courseName;
+            } else {
+                editForm.style.display = "none";
             }
         }
     </script>
@@ -195,7 +174,7 @@
     <div class="container">
         <h1>Course Management</h1>
         <br>
-        <!-- Add/Edit/Delete Courses -->
+        <!-- Add Course Form -->
         <div class="form-section">
             <h2 style="text-align: center; color:black">Add Course</h2>
             <br>
@@ -204,11 +183,13 @@
                     <label for="course-name" style="color:black">Course Name</label>
                     <div style="display: flex; align-items: center;">
                         <input type="text" id="CourseName" name="CourseName" value="@Model.CourseName" required placeholder="Enter Course Name" style="flex: 1;">
-                        <button type="submit" style="min-width: 80px; height: 100%;">Add</button>
+                        <button type="submit">Add</button>
                     </div>
                 </div>
             </form>
         </div>
+
+        <!-- Course List with Edit/Delete -->
         <div class="report-panel">
             <h2 style="color:black">Course List</h2>
             <div style="margin-bottom: 20px;">
@@ -229,7 +210,21 @@
                             <td>@course.CourseID</td>
                             <td>@course.CourseName</td>
                             <td>
+                                <span class="action-button" onclick="showEditForm(@course.CourseID, '@course.CourseName')">Update</span>
                                 <span class="action-button" onclick="deleteCourse(@course.CourseID)">Delete</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <div id="edit-form-@course.CourseID" class="edit-form">
+                                    <form asp-action="UpdateCourse" method="post">
+                                        <input type="hidden" name="CourseId" value="@course.CourseID" />
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <input type="text" id="edit-course-name-@course.CourseID" name="CourseName" value="@course.CourseName" required style="flex: 1;" />
+                                            <button type="submit">Save</button>
+                                        </div>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     }

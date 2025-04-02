@@ -184,12 +184,56 @@ namespace ASM_APDP.Controllers
             return RedirectToAction("CourseManagement");
         }
 
+        // Thêm vào phần GET để hiển thị form update
+        [HttpGet]
+        public IActionResult UpdateCourse(int courseId)
+        {
+            var course = _courseFacade.GetCourseById(courseId);
+            if (course == null)
+            {
+                TempData["ErrorMessage"] = "Course not found.";
+                return RedirectToAction("CourseManagement");
+            }
 
+            var model = new AddCourseViewModel
+            {
+                CourseId = course.CourseID,
+                CourseName = course.CourseName,
+                Courses = _courseFacade.GetAllCourses().ToList()
+            };
+            return View(model);
+        }
 
+        // Thêm vào phần POST để xử lý update
+        [HttpPost]
+        public async Task<IActionResult> UpdateCourse(AddCourseViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var course = _courseFacade.GetCourseById(model.CourseId);
+                if (course == null)
+                {
+                    TempData["ErrorMessage"] = "Course not found.";
+                    return RedirectToAction("CourseManagement");
+                }
 
+                course.CourseName = model.CourseName;
+                var isUpdated = await _courseFacade.UpdateCourseAsync(course);
+                if (isUpdated)
+                {
+                    TempData["SuccessMessage"] = "Course updated successfully.";
+                    return RedirectToAction("CourseManagement");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Error updating course.";
+                }
+            }
+            model.Courses = _courseFacade.GetAllCourses().ToList();
+            return View("CourseManagement", model);
+        }
 
     }
-
 
 }
 
