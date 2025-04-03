@@ -44,7 +44,11 @@ namespace ASM_APDP.Repositories
 
         public bool DeleteCourse(int id)
         {
-            var courseEntity = _context.Courses.Find(id);
+            var courseEntity = _context.Courses
+                .Include(c => c.Classes)
+                .ThenInclude(cl => cl.Marks)
+                .FirstOrDefault(c => c.CourseID == id);
+
             if (courseEntity == null) return false;
 
             _context.Courses.Remove(courseEntity);
