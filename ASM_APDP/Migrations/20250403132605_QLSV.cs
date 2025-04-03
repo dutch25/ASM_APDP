@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ASM_APDP.Migrations
 {
     /// <inheritdoc />
-    public partial class AsmQLSV : Migration
+    public partial class QLSV : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -44,6 +44,7 @@ namespace ASM_APDP.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DoB = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -69,7 +70,7 @@ namespace ASM_APDP.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ClassName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     UserID = table.Column<int>(type: "int", nullable: true),
-                    CourseID = table.Column<int>(type: "int", nullable: false)
+                    CourseID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -84,7 +85,8 @@ namespace ASM_APDP.Migrations
                         name: "FK_Classes_Users_UserID",
                         column: x => x.UserID,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -95,17 +97,24 @@ namespace ASM_APDP.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserID = table.Column<int>(type: "int", nullable: false),
                     CourseID = table.Column<int>(type: "int", nullable: false),
-                    Grade = table.Column<decimal>(type: "decimal(5,2)", nullable: false)
+                    ClassID = table.Column<int>(type: "int", nullable: false),
+                    Grade = table.Column<decimal>(type: "decimal(5,2)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Marks", x => x.MarkID);
                     table.ForeignKey(
+                        name: "FK_Marks_Classes_ClassID",
+                        column: x => x.ClassID,
+                        principalTable: "Classes",
+                        principalColumn: "ClassID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Marks_Courses_CourseID",
                         column: x => x.CourseID,
                         principalTable: "Courses",
                         principalColumn: "CourseID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Marks_Users_UserID",
                         column: x => x.UserID,
@@ -123,6 +132,11 @@ namespace ASM_APDP.Migrations
                 name: "IX_Classes_UserID",
                 table: "Classes",
                 column: "UserID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Marks_ClassID",
+                table: "Marks",
+                column: "ClassID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Marks_CourseID",
@@ -144,10 +158,10 @@ namespace ASM_APDP.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Classes");
+                name: "Marks");
 
             migrationBuilder.DropTable(
-                name: "Marks");
+                name: "Classes");
 
             migrationBuilder.DropTable(
                 name: "Courses");

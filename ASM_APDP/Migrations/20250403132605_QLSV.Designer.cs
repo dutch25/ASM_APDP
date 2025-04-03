@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASM_APDP.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250403063114_classidfr")]
-    partial class classidfr
+    [Migration("20250403132605_QLSV")]
+    partial class QLSV
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -85,7 +85,7 @@ namespace ASM_APDP.Migrations
                     b.Property<int>("CourseID")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Grade")
+                    b.Property<decimal?>("Grade")
                         .HasColumnType("decimal(5, 2)");
 
                     b.Property<int>("UserID")
@@ -167,11 +167,13 @@ namespace ASM_APDP.Migrations
                 {
                     b.HasOne("ASM_APDP.Models.Course", "Course")
                         .WithMany("Classes")
-                        .HasForeignKey("CourseID");
+                        .HasForeignKey("CourseID")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ASM_APDP.Models.User", "User")
                         .WithMany("Classes")
-                        .HasForeignKey("UserID");
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Course");
 
@@ -187,7 +189,7 @@ namespace ASM_APDP.Migrations
                         .IsRequired();
 
                     b.HasOne("ASM_APDP.Models.Course", "Course")
-                        .WithMany()
+                        .WithMany("Marks")
                         .HasForeignKey("CourseID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -224,6 +226,8 @@ namespace ASM_APDP.Migrations
             modelBuilder.Entity("ASM_APDP.Models.Course", b =>
                 {
                     b.Navigation("Classes");
+
+                    b.Navigation("Marks");
                 });
 
             modelBuilder.Entity("ASM_APDP.Models.Role", b =>
