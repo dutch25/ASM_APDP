@@ -14,9 +14,9 @@ namespace ASM_APDP.Facades
             _markRepository = markRepository;
         }
 
-        public async Task<IEnumerable<Mark>> GetAllMarksAsync()
+        public async Task<List<Mark>> GetAllMarksAsync()
         {
-            return await _markRepository.GetAllAsync();
+            return await Task.Run(() => _markRepository.GetAll().ToList());
         }
 
         public Mark GetMarkById(int id)

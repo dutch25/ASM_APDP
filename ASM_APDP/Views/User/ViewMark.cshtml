@@ -1,18 +1,15 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IEnumerable<ASM_APDP.ViewModels.StudentMarkViewModel>
 @{
     Layout = null;
 }
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Mark</title>
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
     <link rel="stylesheet" href="~/css/styleIndex.css" asp-append-version="true">
     <link href="~/css/markstyle.css" rel="stylesheet" />
     <style>
@@ -169,7 +166,6 @@
         }
     </style>
 </head>
-
 <body>
     <div class="container">
         <div class="menu">
@@ -199,20 +195,33 @@
         </div>
         <div class="report-panel">
             <h2>Mark Report</h2>
-            <table class="report-table">
-                <thead>
-                    <tr>
-                        <th style="text-align:center;">Course Name</th>
-                        <th style="text-align:center;">Class Name</th>
-                        <th style="text-align:center;">Grade</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Class list data will be populated here -->
-                </tbody>
-            </table>
+            @if (ViewBag.NoDataMessage != null)
+            {
+                <div class="no-data">@ViewBag.NoDataMessage</div>
+            }
+            else
+            {
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align:center;">Course Name</th>
+                            <th style="text-align:center;">Class Name</th>
+                            <th style="text-align:center;">Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var mark in Model)
+                        {
+                            <tr>
+                                <td style="text-align:center;">@mark.CourseName</td>
+                                <td style="text-align:center;">@mark.ClassName</td>
+                                <td style="text-align:center;">@(mark.Grade.HasValue ? mark.Grade.Value.ToString("F2") : "N/A")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
         </div>
     </div>
 </body>
-
 </html>

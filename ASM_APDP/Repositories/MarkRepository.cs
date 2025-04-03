@@ -4,6 +4,7 @@ using ASM_APDP.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,7 +18,6 @@ namespace ASM_APDP.Repositories
         {
             _context = context;
         }
-
         public int Create(Mark mark)
         {
             try
@@ -25,8 +25,15 @@ namespace ASM_APDP.Repositories
                 _context.Marks.Add(mark);
                 return _context.SaveChanges();
             }
-            catch (Exception)
+            catch (DbUpdateException ex)
             {
+                // Log the detailed error (you can use a logging framework instead of Debug)
+                Debug.WriteLine($"Error creating mark: {ex.InnerException?.Message ?? ex.Message}");
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Unexpected error: {ex.Message}");
                 return 0;
             }
         }

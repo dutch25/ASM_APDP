@@ -6,7 +6,7 @@ namespace ASM_APDP.Facades
 {
     public interface IMarkFacade
     {
-        Task<IEnumerable<Mark>> GetAllMarksAsync();
+        Task<List<Mark>> GetAllMarksAsync();
         Mark GetMarkById(int id);
         Mark GetMarkByStudentId(int studentId);
         Mark GetMarkByCourseId(int courseId);

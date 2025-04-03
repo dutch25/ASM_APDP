@@ -14,12 +14,14 @@ namespace ASM_APDP.Controllers
         private readonly IClassFacade _classFacade;
         private readonly IUserFacade _userFacade;
         private readonly ICourseFacade _courseFacade;
+        private readonly IMarkFacade _markFacade;
 
-        public AdminController(IClassFacade classFacade, IUserFacade userFacade, ICourseFacade courseFacade)
+        public AdminController(IClassFacade classFacade, IUserFacade userFacade, ICourseFacade courseFacade, IMarkFacade markFacade)
         {
             _classFacade = classFacade ?? throw new ArgumentNullException(nameof(classFacade));
             _userFacade = userFacade ?? throw new ArgumentNullException(nameof(userFacade));
             _courseFacade = courseFacade ?? throw new ArgumentNullException(nameof(courseFacade));
+            _markFacade = markFacade ?? throw new ArgumentNullException(nameof(markFacade));
         }
 
         public IActionResult AdminDashboard()
@@ -27,56 +29,134 @@ namespace ASM_APDP.Controllers
             return View();
         }
 
+        // GET: CreateClass
         public IActionResult CreateClass()
         {
+            var classes = _classFacade.GetAllClasses()?.ToList() ?? new List<Class>();
+            // Filter unique classes by ClassName
+            var uniqueClasses = classes
+                .GroupBy(c => c.ClassName)
+                .Select(g => g.First())
+                .ToList();
+
             var viewModel = new CreateClassViewModel
             {
-                Classes = _classFacade.GetAllClasses().ToList()
+                Classes = uniqueClasses // Use unique classes for display
             };
             return View(viewModel);
         }
 
+        // POST: AddClass
         [HttpPost]
         public IActionResult AddClass(CreateClassViewModel model)
         {
             if (ModelState.IsValid)
             {
+                // Check if a class with the same name already exists
+                var existingClass = _classFacade.GetAllClasses()
+                    ?.FirstOrDefault(c => c.ClassName.Equals(model.ClassName, StringComparison.OrdinalIgnoreCase));
+                if (existingClass != null)
+                {
+                    TempData["ErrorMessage"] = "A class with this name already exists.";
+                    model.Classes = _classFacade.GetAllClasses()
+                        ?.GroupBy(c => c.ClassName)
+                        .Select(g => g.First())
+                        .ToList() ?? new List<Class>();
+                    return View("CreateClass", model);
+                }
+
                 var newClass = new Class
                 {
                     ClassName = model.ClassName
                 };
-                _classFacade.CreateClass(newClass);
-                return RedirectToAction("CreateClass");
+                bool isCreated = _classFacade.CreateClass(newClass);
+                if (isCreated)
+                {
+                    TempData["SuccessMessage"] = "Class created successfully.";
+                    return RedirectToAction("CreateClass");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Error creating class.";
+                }
             }
-            model.Classes = _classFacade.GetAllClasses().ToList();
+
+            model.Classes = _classFacade.GetAllClasses()
+                ?.GroupBy(c => c.ClassName)
+                .Select(g => g.First())
+                .ToList() ?? new List<Class>();
             return View("CreateClass", model);
         }
 
+        // POST: UpdateClass
         [HttpPost]
         public IActionResult UpdateClass(CreateClassViewModel model)
         {
             if (ModelState.IsValid)
             {
                 var existingClass = _classFacade.GetClassById(model.ClassId);
-                if (existingClass != null)
+                if (existingClass == null)
                 {
-                    existingClass.ClassName = model.ClassName;
-                    _classFacade.UpdateClassAsync(existingClass);
+                    TempData["ErrorMessage"] = "Class not found.";
+                    return RedirectToAction("CreateClass");
                 }
-                return RedirectToAction("CreateClass");
+
+                // Check if the new name conflicts with another existing class
+                var duplicateClass = _classFacade.GetAllClasses()
+                    ?.FirstOrDefault(c => c.ClassName.Equals(model.ClassName, StringComparison.OrdinalIgnoreCase) && c.ClassID != model.ClassId);
+                if (duplicateClass != null)
+                {
+                    TempData["ErrorMessage"] = "Another class with this name already exists.";
+                    model.Classes = _classFacade.GetAllClasses()
+                        ?.GroupBy(c => c.ClassName)
+                        .Select(g => g.First())
+                        .ToList() ?? new List<Class>();
+                    return View("CreateClass", model);
+                }
+
+                existingClass.ClassName = model.ClassName;
+                var isUpdated = _classFacade.UpdateClassAsync(existingClass).Result;
+                if (isUpdated)
+                {
+                    TempData["SuccessMessage"] = ".idxClass updated successfully.";
+                    return RedirectToAction("CreateClass");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Error updating class.";
+                }
             }
-            model.Classes = _classFacade.GetAllClasses().ToList();
+
+            model.Classes = _classFacade.GetAllClasses()
+                ?.GroupBy(c => c.ClassName)
+                .Select(g => g.First())
+                .ToList() ?? new List<Class>();
             return View("CreateClass", model);
         }
 
+        // POST: DeleteClass
         [HttpPost]
         public IActionResult DeleteClass(int classId)
         {
-            _classFacade.DeleteClass(classId);
+            var classEntity = _classFacade.GetClassById(classId);
+            if (classEntity != null)
+            {
+                var isDeleted = _classFacade.DeleteClass(classId);
+                if (isDeleted)
+                {
+                    TempData["SuccessMessage"] = "Class deleted successfully.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Error deleting class.";
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Class not found.";
+            }
             return RedirectToAction("CreateClass");
         }
-
-
 
         public IActionResult AdminProfile()
         {
@@ -165,6 +245,23 @@ namespace ASM_APDP.Controllers
             bool isCreated = _classFacade.CreateClass(newClass);
             if (isCreated)
             {
+                // Lấy ClassID của bản ghi vừa tạo (giả sử CreateClass trả về ClassID hoặc bạn cần truy vấn lại)
+                var createdClass = _classFacade.GetAllClasses()
+                    ?.FirstOrDefault(c => c.UserID == model.StudentId && c.CourseID == model.CourseId && c.ClassName == selectedClass.ClassName);
+
+                if (createdClass != null)
+                {
+                    // Tạo bản ghi Mark mặc định
+                    var newMark = new Mark
+                    {
+                        UserID = model.StudentId,
+                        CourseID = model.CourseId,
+                        ClassID = createdClass.ClassID,
+                        Grade = null // Điểm mặc định là null
+                    };
+                    _markFacade.CreateMark(newMark); // Gọi facade để tạo Mark
+                }
+
                 TempData["SuccessMessage"] = "Student assigned successfully.";
             }
             else

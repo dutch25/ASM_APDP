@@ -28,19 +28,17 @@ namespace ASM_APDP.Controllers
         // GET: /Teacher/ReportMark
         public async Task<IActionResult> ReportMark()
         {
-            // Lấy danh sách tất cả lớp học đã gán học sinh từ ClassFacade
             var classes = _classFacade.GetAllClasses()?.ToList() ?? new List<Class>();
-            var marks = await _markFacade.GetAllMarksAsync();
+            var marks = await _markFacade.GetAllMarksAsync() ?? new List<Mark>();
 
-            // Kết hợp dữ liệu từ Class và Mark, lọc bỏ UserID = 0 hoặc null
             var studentMarkViewModels = from c in classes
-                                        where c.UserID.HasValue && c.UserID.Value > 0 // Lọc bỏ UserID null hoặc 0
+                                        where c.UserID.HasValue && c.UserID.Value > 0
                                         join m in marks
                                         on c.ClassID equals m.ClassID into markGroup
                                         from m in markGroup.DefaultIfEmpty()
                                         select new StudentMarkViewModel
                                         {
-                                            UserId = c.UserID.Value, // Sử dụng .Value vì đã lọc null
+                                            UserId = c.UserID.Value,
                                             StudentName = c.User?.FullName ?? "N/A",
                                             CourseName = c.Course?.CourseName ?? "N/A",
                                             ClassName = c.ClassName ?? "N/A",
@@ -53,73 +51,76 @@ namespace ASM_APDP.Controllers
             return View(studentMarkViewModels.ToList());
         }
 
-        // GET: /Teacher/EditMark/5
-        public IActionResult EditMark(int? id, int? userId, int? courseId, int? classId)
-        {
-            Mark mark;
-            if (id.HasValue)
-            {
-                mark = _markFacade.GetMarkById(id.Value);
-                if (mark == null)
-                {
-                    return NotFound();
-                }
-            }
-            else
-            {
-                if (!userId.HasValue || !courseId.HasValue || !classId.HasValue)
-                {
-                    return BadRequest("UserId, CourseId, and ClassId are required to create a new mark.");
-                }
-
-                mark = new Mark
-                {
-                    UserID = userId.Value,
-                    CourseID = courseId.Value,
-                    ClassID = classId.Value,
-                    Grade = 0 // Giá trị mặc định, hoặc null nếu Grade là decimal?
-                };
-            }
-            return View(mark);
-        }
-
-        // POST: /Teacher/EditMark/5
+        // POST: /Teacher/UpdateMarkInline
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult EditMark(int id, [Bind("MarkID,UserID,CourseID,ClassID,Grade")] Mark mark)
+        public async Task<IActionResult> UpdateMarkInline(int? markId, int? userId, int? courseId, int? classId, decimal? grade)
         {
-            if (id != mark.MarkID && id != 0) // id = 0 nếu là Mark mới
+            if (!userId.HasValue || !courseId.HasValue || !classId.HasValue)
             {
-                return NotFound();
+                return Json(new { success = false, message = "Invalid input data: UserID, CourseID, or ClassID is missing." });
             }
 
-            if (ModelState.IsValid)
+            try
             {
-                try
+                // Validate Class assignment exists
+                var classAssignment = _classFacade.GetAllClasses()
+                    ?.FirstOrDefault(c => c.UserID == userId.Value && c.CourseID == courseId.Value && c.ClassID == classId.Value);
+                if (classAssignment == null)
                 {
-                    if (id == 0) // Tạo mới Mark
-                    {
-                        _markFacade.CreateMark(mark);
-                    }
-                    else // Cập nhật Mark
-                    {
-                        _markFacade.UpdateMark(mark);
-                    }
+                    return Json(new { success = false, message = $"No class assignment found for UserID={userId}, CourseID={courseId}, ClassID={classId}." });
                 }
-                catch (DbUpdateConcurrencyException)
+
+                if (markId.HasValue && markId.Value > 0)
                 {
-                    if (_markFacade.GetMarkById(mark.MarkID) == null)
+                    // Update existing mark
+                    var mark = _markFacade.GetMarkById(markId.Value);
+                    if (mark == null)
                     {
-                        return NotFound();
+                        return Json(new { success = false, message = "Mark not found." });
+                    }
+                    mark.Grade = grade;
+                    var success = _markFacade.UpdateMark(mark);
+                    return Json(new { success = success, message = success ? "Mark updated successfully." : "Error updating mark." });
+                }
+                else
+                {
+                    // Check if a Mark already exists for this combination
+                    var existingMark = _markFacade.GetAllMarksAsync().Result
+                        ?.FirstOrDefault(m => m.UserID == userId.Value && m.CourseID == courseId.Value && m.ClassID == classId.Value);
+
+                    if (existingMark != null)
+                    {
+                        // Update existing mark if found
+                        existingMark.Grade = grade;
+                        var success = _markFacade.UpdateMark(existingMark);
+                        return Json(new { success = success, message = success ? "Mark updated successfully." : "Error updating mark.", markId = existingMark.MarkID });
                     }
                     else
                     {
-                        throw;
+                        // Create a new mark
+                        var newMark = new Mark
+                        {
+                            UserID = userId.Value,
+                            CourseID = courseId.Value,
+                            ClassID = classId.Value,
+                            Grade = grade
+                        };
+                        var rowsAffected = _markFacade.CreateMark(newMark);
+                        if (rowsAffected > 0)
+                        {
+                            var createdMark = _markFacade.GetAllMarksAsync().Result
+                                .FirstOrDefault(m => m.UserID == userId.Value && m.CourseID == courseId.Value && m.ClassID == classId.Value);
+                            return Json(new { success = true, message = "Mark created successfully.", markId = createdMark?.MarkID });
+                        }
+                        return Json(new { success = false, message = "Failed to create mark. Check database constraints." });
                     }
                 }
-                return RedirectToAction(nameof(ReportMark));
             }
-            return View(mark);
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
+            }
         }
     }
 }
