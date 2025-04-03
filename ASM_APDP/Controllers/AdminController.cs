@@ -27,6 +27,10 @@ namespace ASM_APDP.Controllers
             return View();
         }
 
+        public IActionResult CreateClass()
+        {
+            return View();
+        }
         public IActionResult AdminProfile()
         {
             return View();

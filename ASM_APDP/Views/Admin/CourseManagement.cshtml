@@ -159,6 +159,7 @@
                 }
             </li>
             <li><a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="AdminDashBoard"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
+            <li><a asp-area="" asp-controller="Admin" asp-action="CreateClass"><span class="material-symbols-outlined">school</span><span>Create Class</span></a></li>
             <li><a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="CourseManagement"><span class="material-symbols-outlined">book</span><span>Course Management</span></a></li>
             <li><a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="AssignCoursesToStudents"><span class="material-symbols-outlined">assignment_ind</span><span>Assign Courses To Students</span></a></li>
             <li><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Profile"><span class="material-symbols-outlined">person</span><span>Profile</span></a></li>
@@ -193,7 +194,6 @@
         <div class="report-panel">
             <h2 style="color:black">Course List</h2>
             <div style="margin-bottom: 20px;">
-                <input type="text" id="search" placeholder="Search Course..." style="padding: 10px; width: 100%; border: 1px solid #ccc; border-radius: 5px;">
             </div>
             <table class="report-table">
                 <thead>
