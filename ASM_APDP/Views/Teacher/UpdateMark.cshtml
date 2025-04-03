@@ -1,0 +1,48 @@
+﻿@model ASM_APDP.Models.Mark
+@{
+    ViewData["Title"] = "Update Mark";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Mark</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            color: #C9C9C9;
+        }
+
+        h2 {
+            color: #C9C9C9;
+        }
+
+        .form-group label {
+            color: #C9C9C9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Update Mark</h2>
+        <form asp-action="UpdateMark" method="post">
+            <input type="hidden" asp-for="MarkID" />
+            <input type="hidden" asp-for="UserID" />
+            <input type="hidden" asp-for="CourseID" />
+            <div class="form-group">
+                <label asp-for="Grade" class="control-label">Grade</label>
+                <input asp-for="Grade" class="form-control" />
+                <span asp-validation-for="Grade" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="ReportMark" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

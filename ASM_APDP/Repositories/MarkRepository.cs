@@ -1,8 +1,11 @@
 ﻿using ASM_APDP.Data;
+using ASM_APDP.Facades;
 using ASM_APDP.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ASM_APDP.Repositories
 {
@@ -15,7 +18,7 @@ namespace ASM_APDP.Repositories
             _context = context;
         }
 
-        int IMarkRepository.Create(Mark mark)
+        public int Create(Mark mark)
         {
             try
             {
@@ -28,7 +31,7 @@ namespace ASM_APDP.Repositories
             }
         }
 
-        bool IMarkRepository.Delete(int id)
+        public bool Delete(int id)
         {
             try
             {
@@ -46,11 +49,15 @@ namespace ASM_APDP.Repositories
             }
         }
 
-        IEnumerable<Mark> IMarkRepository.GetAll()
+        public IEnumerable<Mark> GetAll()
         {
             try
             {
-                return _context.Marks.ToList();
+                return _context.Marks
+                    .Include(m => m.User)   
+                    .Include(m => m.Course)  
+                    .Include(m => m.Class)  
+                    .ToList();
             }
             catch (Exception)
             {
@@ -58,11 +65,31 @@ namespace ASM_APDP.Repositories
             }
         }
 
-        Mark IMarkRepository.GetMarkByID(int id)
+        public async Task<IEnumerable<Mark>> GetAllAsync()
         {
             try
             {
-                return _context.Marks.Find(id);
+                return await _context.Marks
+                    .Include(m => m.User)
+                    .Include(m => m.Course)
+                    .Include(m => m.Class)
+                    .ToListAsync();
+            }
+            catch (Exception)
+            {
+                return Enumerable.Empty<Mark>();
+            }
+        }
+
+        public Mark GetMarkByID(int id)
+        {
+            try
+            {
+                return _context.Marks
+                    .Include(m => m.User)
+                    .Include(m => m.Course)
+                    .Include(m => m.Class)
+                    .FirstOrDefault(m => m.MarkID == id);
             }
             catch (Exception)
             {
@@ -70,11 +97,15 @@ namespace ASM_APDP.Repositories
             }
         }
 
-        Mark IMarkRepository.GetMarkByStudentID(int studentID)
+        public Mark GetMarkByStudentID(int studentID)
         {
             try
             {
-                return _context.Marks.FirstOrDefault(m => m.UserID == studentID);
+                return _context.Marks
+                    .Include(m => m.User)
+                    .Include(m => m.Course)
+                    .Include(m => m.Class)
+                    .FirstOrDefault(m => m.UserID == studentID);
             }
             catch (Exception)
             {
@@ -82,11 +113,15 @@ namespace ASM_APDP.Repositories
             }
         }
 
-        Mark IMarkRepository.GetMarkByCourseID(int courseID)
+        public Mark GetMarkByCourseID(int courseID)
         {
             try
             {
-                return _context.Marks.FirstOrDefault(m => m.CourseID == courseID);
+                return _context.Marks
+                    .Include(m => m.User)
+                    .Include(m => m.Course)
+                    .Include(m => m.Class)
+                    .FirstOrDefault(m => m.CourseID == courseID);
             }
             catch (Exception)
             {
@@ -94,7 +129,7 @@ namespace ASM_APDP.Repositories
             }
         }
 
-        bool IMarkRepository.Grade(Mark mark)
+        public bool Grade(Mark mark)
         {
             try
             {
@@ -107,7 +142,7 @@ namespace ASM_APDP.Repositories
             }
         }
 
-        bool IMarkRepository.Update(Mark mark)
+        public bool Update(Mark mark)
         {
             try
             {

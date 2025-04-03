@@ -23,6 +23,7 @@ namespace ASM_APDP
             builder.Services.AddScoped<IRoleRepository, RoleRepository>();
             builder.Services.AddScoped<IClassRepository, ClassRepository>();
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+            builder.Services.AddScoped<IMarkRepository, MarkRepository>();
 
 
 
@@ -30,6 +31,7 @@ namespace ASM_APDP
             builder.Services.AddScoped<IRoleFacade, RoleFacade>();
             builder.Services.AddScoped<IClassFacade, ClassFacade>();
             builder.Services.AddScoped<ICourseFacade, CourseFacade>();
+            builder.Services.AddScoped<IMarkFacade, MarkFacade>();
 
 
 
