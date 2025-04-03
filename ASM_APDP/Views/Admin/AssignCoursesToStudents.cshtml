@@ -182,35 +182,16 @@
             }
         }
 
-        function updateClassId() {
-            var classNameInput = document.getElementById("ClassName");
-            var classIdInput = document.getElementById("ClassId");
-            var classes = @Html.Raw(ViewBag.ClassesJson);
-
-            console.log("Classes available:", classes); // Debug: Log available classes
-            console.log("Selected ClassName:", classNameInput.value); // Debug: Log selected value
-
-            var selectedClass = classes.find(c => c.className.trim() === classNameInput.value.trim());
-            if (selectedClass) {
-                classIdInput.value = selectedClass.classID;
-                console.log("Set ClassId to:", selectedClass.classID); // Debug: Confirm ClassId
-            } else {
-                classIdInput.value = "";
-                console.log("No matching class found, ClassId cleared"); // Debug: No match
-            }
-        }
-
         function validateForm(event) {
-            updateClassId(); // Ensure ClassId is updated before validation
             var studentId = document.getElementById("StudentId").value;
             var classId = document.getElementById("ClassId").value;
             var courseId = document.getElementById("CourseId").value;
 
-            console.log("Form values before submission - StudentId:", studentId, "ClassId:", classId, "CourseId:", courseId); // Debug: Log all values
+            console.log("Form values before submission - StudentId:", studentId, "ClassId:", classId, "CourseId:", courseId);
 
             if (!studentId || !classId || !courseId || classId === "0" || classId === "") {
-                alert("Please ensure all fields are filled and a valid class is selected from the list.");
-                event.preventDefault(); // Prevent form submission
+                alert("Please ensure all fields are filled and a valid class is selected.");
+                event.preventDefault();
                 return false;
             }
             return true;
@@ -273,16 +254,15 @@
                     <span asp-validation-for="StudentId" class="text-danger"></span>
                 </div>
                 <div>
-                    <label for="ClassName">Class Name:</label>
-                    <input asp-for="ClassName" id="ClassName" required placeholder="Enter or Select Class Name" list="classList" oninput="updateClassId()" />
-                    <datalist id="classList">
-                        @foreach (var classItem in ViewBag.Classes as IEnumerable<ASM_APDP.Models.Class> ?? Enumerable.Empty<ASM_APDP.Models.Class>())
+                    <label for="ClassId">Select Class:</label>
+                    <select asp-for="ClassId" id="ClassId" required>
+                        <option value="">-- Select Class --</option>
+                        @foreach (var classItem in ViewBag.UniqueClasses as IEnumerable<ASM_APDP.Models.Class> ?? Enumerable.Empty<ASM_APDP.Models.Class>())
                         {
-                            <option value="@classItem.ClassName" />
+                            <option value="@classItem.ClassID">@classItem.ClassName</option>
                         }
-                    </datalist>
-                    <input type="hidden" asp-for="ClassId" id="ClassId" />
-                    <span asp-validation-for="ClassName" class="text-danger"></span>
+                    </select>
+                    <span asp-validation-for="ClassId" class="text-danger"></span>
                 </div>
                 <div>
                     <label for="CourseId">Select Course:</label>
@@ -298,14 +278,16 @@
                 <button type="submit">Assign</button>
             </form>
         </div>
-
-        <!-- Assigned Courses List -->
         <div class="report-panel">
             <h2>All Assigned Students</h2>
             @{
                 var classes = ViewBag.Classes as IEnumerable<ASM_APDP.Models.Class> ?? Enumerable.Empty<ASM_APDP.Models.Class>();
                 var students = ViewBag.Students as IEnumerable<ASM_APDP.Models.User> ?? Enumerable.Empty<ASM_APDP.Models.User>();
                 var coursesList = ViewBag.Courses as IEnumerable<ASM_APDP.Models.Course> ?? Enumerable.Empty<ASM_APDP.Models.Course>();
+                var uniqueClasses = classes
+                .GroupBy(c => c.ClassName)
+                .Select(g => g.First())
+                .ToList();
 
                 if (classes.Any())
                 {
@@ -346,15 +328,21 @@
                                                             <option value="">-- Select Student --</option>
                                                             @foreach (var studentOption in ViewBag.Students as IEnumerable<ASM_APDP.Models.User> ?? Enumerable.Empty<ASM_APDP.Models.User>())
                                                             {
-                                                                <option value="@studentOption.Id">@studentOption.FullName (ID: @studentOption.Id)</option>
+                                                                <option value="@studentOption.Id" selected="@(studentOption.Id == student.Id ? "selected" : null)">@studentOption.FullName (ID: @studentOption.Id)</option>
                                                             }
                                                         </select>
-                                                        <input type="text" id="edit-class-name-@classItem.ClassID" name="ClassName" required placeholder="Enter or Select Class Name" list="classList" />
+                                                        <select id="edit-class-id-@classItem.ClassID" name="NewClassId" required>
+                                                            <option value="">-- Select Class --</option>
+                                                            @foreach (var classOption in uniqueClasses)
+                                                            {
+                                                                <option value="@classOption.ClassID" selected="@(classOption.ClassID == classItem.ClassID ? "selected" : null)">@classOption.ClassName</option>
+                                                            }
+                                                        </select>
                                                         <select id="edit-course-id-@classItem.ClassID" name="CourseId" required>
                                                             <option value="">-- Select Course --</option>
                                                             @foreach (var courseOption in ViewBag.Courses as IEnumerable<ASM_APDP.Models.Course> ?? Enumerable.Empty<ASM_APDP.Models.Course>())
                                                             {
-                                                                <option value="@courseOption.CourseID">@courseOption.CourseName</option>
+                                                                <option value="@courseOption.CourseID" selected="@(courseOption.CourseID == course.CourseID ? "selected" : null)">@courseOption.CourseName</option>
                                                             }
                                                         </select>
                                                         <button type="submit">Save</button>
