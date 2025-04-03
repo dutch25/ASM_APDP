@@ -14,4 +14,3 @@ namespace ASM_APDP.Repositories
         bool DeleteClass(int id);
     }
 }
-

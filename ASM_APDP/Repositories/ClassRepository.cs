@@ -2,6 +2,7 @@
 using ASM_APDP.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ASM_APDP.Repositories
@@ -17,17 +18,26 @@ namespace ASM_APDP.Repositories
 
         public IEnumerable<Class> GetAllClasses()
         {
-            return _context.Classes;
+            return _context.Classes
+                .Include(c => c.User)    // Tải User để lấy FullName
+                .Include(c => c.Course)  // Tải Course để lấy CourseName
+                .ToList();
         }
 
         public Class GetClassById(int id)
         {
-            return _context.Classes.Find(id);
+            return _context.Classes
+                .Include(c => c.User)
+                .Include(c => c.Course)
+                .FirstOrDefault(c => c.ClassID == id);
         }
 
         public Class GetClassByName(string className)
         {
-            return _context.Classes.FirstOrDefault(c => c.ClassName == className);
+            return _context.Classes
+                .Include(c => c.User)
+                .Include(c => c.Course)
+                .FirstOrDefault(c => c.ClassName == className);
         }
 
         public bool CreateClass(Class classEntity)
@@ -52,4 +62,3 @@ namespace ASM_APDP.Repositories
         }
     }
 }
-

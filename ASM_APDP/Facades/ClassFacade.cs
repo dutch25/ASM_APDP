@@ -24,11 +24,6 @@ namespace ASM_APDP.Facades
             return _classRepository.GetClassById(id);
         }
 
-        public Class GetClassByName(string className)
-        {
-            return _classRepository.GetClassByName(className);
-        }
-
         public bool CreateClass(Class classEntity)
         {
             return _classRepository.CreateClass(classEntity);
@@ -45,4 +40,3 @@ namespace ASM_APDP.Facades
         }
     }
 }
-
