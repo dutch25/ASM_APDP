@@ -22,5 +22,7 @@ namespace ASM_APDP.Models
 
         [ForeignKey("CourseID")]
         public virtual Course Course { get; set; }
+        public virtual ICollection<Mark> Marks { get; set; } = new List<Mark>();
+
     }
 }
