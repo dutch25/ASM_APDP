@@ -4,6 +4,7 @@ using ASM_APDP.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace ASM_APDP.Controllers
 {
@@ -11,11 +12,15 @@ namespace ASM_APDP.Controllers
     {
         private readonly IUserFacade _userFacade;
         private readonly IRoleFacade _roleFacade;
+        private readonly IMarkFacade _markFacade;
+        private readonly IClassFacade _classFacade;
 
-        public UserController(IUserFacade userFacade, IRoleFacade roleFacade)
+        public UserController(IUserFacade userFacade, IRoleFacade roleFacade, IMarkFacade markFacade, IClassFacade classFacade)
         {
             _userFacade = userFacade;
             _roleFacade = roleFacade;
+            _markFacade = markFacade;
+            _classFacade = classFacade ?? throw new ArgumentNullException(nameof(classFacade));
         }
 
         // GET: /User/Register
@@ -166,14 +171,62 @@ namespace ASM_APDP.Controllers
             return View(model);
         }
 
-        public IActionResult ViewMark()
-        {
-            return View();
-        }
+       
 
         public IActionResult ViewCourse()
         {
             return View();
+        }
+
+        public async Task<IActionResult> ViewMark()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var roleName = HttpContext.Session.GetString("RoleName");
+
+            if (!userId.HasValue || roleName != "Student")
+            {
+                return RedirectToAction("Login");
+            }
+
+            // Fetch classes with null check
+            var allClasses = _classFacade?.GetAllClasses(); // Null check on _classFacade
+            var classes = allClasses != null
+                ? allClasses.Where(c => c.UserID == userId.Value).ToList()
+                : new List<Class>();
+
+            // Fetch marks with null check and exception handling
+            List<Mark> marks = new List<Mark>();
+            if (_markFacade != null)
+            {
+                try
+                {
+                    marks = await _markFacade.GetAllMarksAsync() ?? new List<Mark>();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error fetching marks: {ex.Message}");
+                }
+            }
+
+            // Join data safely
+            var studentMarks = from c in classes
+                               join m in marks
+                               on c.ClassID equals m.ClassID into markGroup
+                               from m in markGroup.DefaultIfEmpty()
+                               select new StudentMarkViewModel
+                               {
+                                   ClassName = c.ClassName ?? "N/A",
+                                   CourseName = c.Course?.CourseName ?? "N/A",
+                                   Grade = m?.Grade
+                               };
+
+            var markList = studentMarks.ToList();
+            if (!markList.Any())
+            {
+                ViewBag.NoDataMessage = "No marks available yet.";
+            }
+
+            return View(markList);
         }
     }
 }
