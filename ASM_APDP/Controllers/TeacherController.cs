@@ -58,7 +58,9 @@ namespace ASM_APDP.Controllers
         {
             if (!userId.HasValue || !courseId.HasValue || !classId.HasValue)
             {
-                return Json(new { success = false, message = "Invalid input data: UserID, CourseID, or ClassID is missing." });
+                TempData["Message"] = "Invalid input data: UserID, CourseID, or ClassID is missing.";
+                TempData["Success"] = false;
+                return RedirectToAction("ReportMark");
             }
 
             try
@@ -68,7 +70,9 @@ namespace ASM_APDP.Controllers
                     ?.FirstOrDefault(c => c.UserID == userId.Value && c.CourseID == courseId.Value && c.ClassID == classId.Value);
                 if (classAssignment == null)
                 {
-                    return Json(new { success = false, message = $"No class assignment found for UserID={userId}, CourseID={courseId}, ClassID={classId}." });
+                    TempData["Message"] = $"No class assignment found for UserID={userId}, CourseID={courseId}, ClassID={classId}.";
+                    TempData["Success"] = false;
+                    return RedirectToAction("ReportMark");
                 }
 
                 if (markId.HasValue && markId.Value > 0)
@@ -77,11 +81,14 @@ namespace ASM_APDP.Controllers
                     var mark = _markFacade.GetMarkById(markId.Value);
                     if (mark == null)
                     {
-                        return Json(new { success = false, message = "Mark not found." });
+                        TempData["Message"] = "Mark not found.";
+                        TempData["Success"] = false;
+                        return RedirectToAction("ReportMark");
                     }
                     mark.Grade = grade;
                     var success = _markFacade.UpdateMark(mark);
-                    return Json(new { success = success, message = success ? "Mark updated successfully." : "Error updating mark." });
+                    TempData["Message"] = success ? "Mark updated successfully." : "Error updating mark.";
+                    TempData["Success"] = success;
                 }
                 else
                 {
@@ -94,7 +101,8 @@ namespace ASM_APDP.Controllers
                         // Update existing mark if found
                         existingMark.Grade = grade;
                         var success = _markFacade.UpdateMark(existingMark);
-                        return Json(new { success = success, message = success ? "Mark updated successfully." : "Error updating mark.", markId = existingMark.MarkID });
+                        TempData["Message"] = success ? "Mark updated successfully." : "Error updating mark.";
+                        TempData["Success"] = success;
                     }
                     else
                     {
@@ -107,20 +115,18 @@ namespace ASM_APDP.Controllers
                             Grade = grade
                         };
                         var rowsAffected = _markFacade.CreateMark(newMark);
-                        if (rowsAffected > 0)
-                        {
-                            var createdMark = _markFacade.GetAllMarksAsync().Result
-                                .FirstOrDefault(m => m.UserID == userId.Value && m.CourseID == courseId.Value && m.ClassID == classId.Value);
-                            return Json(new { success = true, message = "Mark created successfully.", markId = createdMark?.MarkID });
-                        }
-                        return Json(new { success = false, message = "Failed to create mark. Check database constraints." });
+                        TempData["Message"] = rowsAffected > 0 ? "Mark created successfully." : "Failed to create mark. Check database constraints.";
+                        TempData["Success"] = rowsAffected > 0;
                     }
                 }
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = $"Error: {ex.Message}" });
+                TempData["Message"] = $"Error: {ex.Message}";
+                TempData["Success"] = false;
             }
+
+            return RedirectToAction("ReportMark");
         }
     }
 }
