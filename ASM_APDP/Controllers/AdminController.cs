@@ -29,8 +29,55 @@ namespace ASM_APDP.Controllers
 
         public IActionResult CreateClass()
         {
-            return View();
+            var viewModel = new CreateClassViewModel
+            {
+                Classes = _classFacade.GetAllClasses().ToList()
+            };
+            return View(viewModel);
         }
+
+        [HttpPost]
+        public IActionResult AddClass(CreateClassViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var newClass = new Class
+                {
+                    ClassName = model.ClassName
+                };
+                _classFacade.CreateClass(newClass);
+                return RedirectToAction("CreateClass");
+            }
+            model.Classes = _classFacade.GetAllClasses().ToList();
+            return View("CreateClass", model);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateClass(CreateClassViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingClass = _classFacade.GetClassById(model.ClassId);
+                if (existingClass != null)
+                {
+                    existingClass.ClassName = model.ClassName;
+                    _classFacade.UpdateClassAsync(existingClass);
+                }
+                return RedirectToAction("CreateClass");
+            }
+            model.Classes = _classFacade.GetAllClasses().ToList();
+            return View("CreateClass", model);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteClass(int classId)
+        {
+            _classFacade.DeleteClass(classId);
+            return RedirectToAction("CreateClass");
+        }
+
+
+
         public IActionResult AdminProfile()
         {
             return View();
