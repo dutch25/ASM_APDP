@@ -166,5 +166,14 @@ namespace ASM_APDP.Controllers
             return View(model);
         }
 
+        public IActionResult ViewMark()
+        {
+            return View();
+        }
+
+        public IActionResult ViewCourse()
+        {
+            return View();
+        }
     }
 }
