@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ASM_APDP.Data;
 using ASM_APDP.Repositories;
 using ASM_APDP.Facades;
+using ASM_APDP.Factories;
 // Thêm namespace chứa IUserRepository
 
 namespace ASM_APDP
@@ -18,21 +19,13 @@ namespace ASM_APDP
                 options.UseSqlServer(builder.Configuration.GetConnectionString("FinalQLVSContext")
                 ?? throw new InvalidOperationException("Connection string 'FinalQLVSContext' not found.")));
 
-            // Đăng ký IUserRepository và UserRepository
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IRoleRepository, RoleRepository>();
-            builder.Services.AddScoped<IClassRepository, ClassRepository>();
-            builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-            builder.Services.AddScoped<IMarkRepository, MarkRepository>();
 
-
-
-            builder.Services.AddScoped<IUserFacade, UserFacade>();
-            builder.Services.AddScoped<IRoleFacade, RoleFacade>();
             builder.Services.AddScoped<IClassFacade, ClassFacade>();
             builder.Services.AddScoped<ICourseFacade, CourseFacade>();
-            builder.Services.AddScoped<IMarkFacade, MarkFacade>();
 
+            builder.Services.AddScoped<IMarkFactory, MarkConcreteFactory>();
 
 
 

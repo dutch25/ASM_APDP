@@ -1,8 +1,8 @@
 ﻿using ASM_APDP.Facades;
+using ASM_APDP.Factories; // Thay Facades bằng Factories cho Mark
 using ASM_APDP.Models;
 using ASM_APDP.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,12 +11,12 @@ namespace ASM_APDP.Controllers
 {
     public class TeacherController : Controller
     {
-        private readonly IMarkFacade _markFacade;
+        private readonly IMarkFactory _markFactory; // Thay IMarkFacade bằng IMarkFactory
         private readonly IClassFacade _classFacade;
 
-        public TeacherController(IMarkFacade markFacade, IClassFacade classFacade)
+        public TeacherController(IMarkFactory markFactory, IClassFacade classFacade)
         {
-            _markFacade = markFacade;
+            _markFactory = markFactory ?? throw new ArgumentNullException(nameof(markFactory));
             _classFacade = classFacade ?? throw new ArgumentNullException(nameof(classFacade));
         }
 
@@ -29,7 +29,7 @@ namespace ASM_APDP.Controllers
         public async Task<IActionResult> ReportMark()
         {
             var classes = _classFacade.GetAllClasses()?.ToList() ?? new List<Class>();
-            var marks = await _markFacade.GetAllMarksAsync() ?? new List<Mark>();
+            var marks = _markFactory.GetAllMarks().ToList(); // Sử dụng IMarkFactory
 
             var studentMarkViewModels = from c in classes
                                         where c.UserID.HasValue && c.UserID.Value > 0
@@ -65,7 +65,6 @@ namespace ASM_APDP.Controllers
 
             try
             {
-                // Validate Class assignment exists
                 var classAssignment = _classFacade.GetAllClasses()
                     ?.FirstOrDefault(c => c.UserID == userId.Value && c.CourseID == courseId.Value && c.ClassID == classId.Value);
                 if (classAssignment == null)
@@ -77,8 +76,7 @@ namespace ASM_APDP.Controllers
 
                 if (markId.HasValue && markId.Value > 0)
                 {
-                    // Update existing mark
-                    var mark = _markFacade.GetMarkById(markId.Value);
+                    var mark = _markFactory.GetMarkById(markId.Value); // Sử dụng IMarkFactory
                     if (mark == null)
                     {
                         TempData["Message"] = "Mark not found.";
@@ -86,37 +84,27 @@ namespace ASM_APDP.Controllers
                         return RedirectToAction("ReportMark");
                     }
                     mark.Grade = grade;
-                    var success = _markFacade.UpdateMark(mark);
+                    var success = _markFactory.UpdateMark(mark); // Sử dụng IMarkFactory
                     TempData["Message"] = success ? "Mark updated successfully." : "Error updating mark.";
                     TempData["Success"] = success;
                 }
                 else
                 {
-                    // Check if a Mark already exists for this combination
-                    var existingMark = _markFacade.GetAllMarksAsync().Result
-                        ?.FirstOrDefault(m => m.UserID == userId.Value && m.CourseID == courseId.Value && m.ClassID == classId.Value);
+                    var existingMark = _markFactory.GetAllMarks()
+                        .FirstOrDefault(m => m.UserID == userId.Value && m.CourseID == courseId.Value && m.ClassID == classId.Value);
 
                     if (existingMark != null)
                     {
-                        // Update existing mark if found
                         existingMark.Grade = grade;
-                        var success = _markFacade.UpdateMark(existingMark);
+                        var success = _markFactory.UpdateMark(existingMark); // Sử dụng IMarkFactory
                         TempData["Message"] = success ? "Mark updated successfully." : "Error updating mark.";
                         TempData["Success"] = success;
                     }
                     else
                     {
-                        // Create a new mark
-                        var newMark = new Mark
-                        {
-                            UserID = userId.Value,
-                            CourseID = courseId.Value,
-                            ClassID = classId.Value,
-                            Grade = grade
-                        };
-                        var rowsAffected = _markFacade.CreateMark(newMark);
-                        TempData["Message"] = rowsAffected > 0 ? "Mark created successfully." : "Failed to create mark. Check database constraints.";
-                        TempData["Success"] = rowsAffected > 0;
+                        var newMark = _markFactory.CreateMark(userId.Value, courseId.Value, classId.Value, grade); // Sử dụng IMarkFactory
+                        TempData["Message"] = newMark != null ? "Mark created successfully." : "Failed to create mark.";
+                        TempData["Success"] = newMark != null;
                     }
                 }
             }

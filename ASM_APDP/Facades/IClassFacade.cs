@@ -8,6 +8,7 @@ namespace ASM_APDP.Facades
     {
         IEnumerable<Class> GetAllClasses();
         Class GetClassById(int id);
+        Class GetClassByName(string className);
         bool CreateClass(Class classEntity);
         Task<bool> UpdateClassAsync(Class classEntity);
         bool DeleteClass(int id);
