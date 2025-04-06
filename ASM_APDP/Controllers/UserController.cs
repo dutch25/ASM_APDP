@@ -1,25 +1,28 @@
-﻿using ASM_APDP.Models;
-using ASM_APDP.Facades;
+﻿using ASM_APDP.Factories; // Thay Facades bằng Factories cho Mark
+using ASM_APDP.Models;
+using ASM_APDP.Repositories;
 using ASM_APDP.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Linq;
+using ASM_APDP.Facades;
 
 namespace ASM_APDP.Controllers
 {
     public class UserController : Controller
     {
-        private readonly IUserFacade _userFacade;
-        private readonly IRoleFacade _roleFacade;
-        private readonly IMarkFacade _markFacade;
+        private readonly IUserRepository _userRepository;
+        private readonly IRoleRepository _roleRepository;
+        private readonly IMarkFactory _markFactory; // Thay IMarkFacade bằng IMarkFactory
         private readonly IClassFacade _classFacade;
 
-        public UserController(IUserFacade userFacade, IRoleFacade roleFacade, IMarkFacade markFacade, IClassFacade classFacade)
+        public UserController(IUserRepository userRepository, IRoleRepository roleRepository, IMarkFactory markFactory, IClassFacade classFacade)
         {
-            _userFacade = userFacade;
-            _roleFacade = roleFacade;
-            _markFacade = markFacade;
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
+            _markFactory = markFactory ?? throw new ArgumentNullException(nameof(markFactory));
             _classFacade = classFacade ?? throw new ArgumentNullException(nameof(classFacade));
         }
 
@@ -39,21 +42,21 @@ namespace ASM_APDP.Controllers
                 {
                     Username = model.Username,
                     FullName = model.FullName,
-                    Password = model.Password, // Không mã hóa mật khẩu
+                    Password = model.Password,
                     Email = model.Email,
                     CreateDate = DateTime.Now,
                     DoB = model.DoB,
                     RoleId = 2 // Luôn là Student
                 };
 
-                bool success = _userFacade.RegisterUser(user);
+                bool success = _userRepository.CreateUser(user);
                 if (!success)
                 {
-                    if (_userFacade.GetUserByUsername(model.Username) != null)
+                    if (_userRepository.GetUserByUsername(model.Username) != null)
                     {
                         ModelState.AddModelError("", "Username already exists.");
                     }
-                    else if (_userFacade.EmailExists(model.Email))
+                    else if (_userRepository.EmailExists(model.Email))
                     {
                         ModelState.AddModelError("", "Email already exists.");
                     }
@@ -81,14 +84,14 @@ namespace ASM_APDP.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = _userFacade.GetUserByUsernameAndPassword(model.Username, model.Password);
-                if (user == null || user.Password != model.Password) // Kiểm tra mật khẩu trực tiếp
+                var user = _userRepository.GetUserByUsernameAndPassword(model.Username, model.Password);
+                if (user == null || user.Password != model.Password)
                 {
                     ModelState.AddModelError("", "Invalid username or password.");
                     return View(model);
                 }
 
-                var role = _roleFacade.GetRoleById(user.RoleId);
+                var role = _roleRepository.GetRoleByID(user.RoleId);
                 if (role == null || string.IsNullOrEmpty(role.RoleName) || role.RoleName != model.RoleName)
                 {
                     ModelState.AddModelError("", "Invalid role assignment.");
@@ -97,14 +100,12 @@ namespace ASM_APDP.Controllers
 
                 model.RoleName = role.RoleName;
 
-                // Lưu vào session
                 HttpContext.Session.SetInt32("UserId", user.Id);
                 HttpContext.Session.SetString("Username", user.Username);
                 HttpContext.Session.SetInt32("RoleId", user.RoleId);
                 HttpContext.Session.SetString("RoleName", model.RoleName);
                 HttpContext.Session.SetInt32("IsLogin", 1);
 
-                // Điều hướng dựa trên RoleId
                 return role.RoleName switch
                 {
                     "Admin" => RedirectToAction("AdminDashboard", "Admin"),
@@ -132,11 +133,20 @@ namespace ASM_APDP.Controllers
                 return RedirectToAction("Login");
             }
 
-            var model = await _userFacade.GetUserProfileAsync(username);
-            if (model == null)
+            var user = await _userRepository.GetUserByUsernameAsync(username);
+            if (user == null)
             {
                 return RedirectToAction("Login");
             }
+
+            var model = new ProfileViewModel
+            {
+                Username = user.Username,
+                FullName = user.FullName,
+                Email = user.Email,
+                DoB = user.DoB,
+                RoleId = user.RoleId
+            };
 
             return View(model);
         }
@@ -152,11 +162,32 @@ namespace ASM_APDP.Controllers
                     return RedirectToAction("Login");
                 }
 
-                bool success = await _userFacade.UpdateUserProfileAsync(username, model);
+                var user = await _userRepository.GetUserByUsernameAsync(username);
+                if (user == null)
+                {
+                    return RedirectToAction("Login");
+                }
+
+                // Kiểm tra mật khẩu và xác nhận mật khẩu
+                if (!string.IsNullOrEmpty(model.NewPassword) && model.NewPassword != model.ConfirmPassword)
+                {
+                    ModelState.AddModelError("", "Password and Confirm Password do not match.");
+                    return View(model);
+                }
+
+                // Cập nhật các trường từ model
+                user.FullName = model.FullName;
+                user.Email = model.Email;
+                user.DoB = model.DoB;
+                if (!string.IsNullOrEmpty(model.NewPassword)) // Chỉ cập nhật Password nếu người dùng nhập giá trị mới
+                {
+                    user.Password = model.NewPassword;
+                }
+
+                bool success = await _userRepository.UpdateUserAsync(user);
                 if (success)
                 {
                     TempData["SuccessMessage"] = "Your profile has been updated successfully.";
-
                     return model.RoleId switch
                     {
                         1 => RedirectToAction("AdminDashboard", "Admin"),
@@ -170,9 +201,6 @@ namespace ASM_APDP.Controllers
 
             return View(model);
         }
-
-       
-
         public IActionResult ViewCourse()
         {
             return View();
@@ -188,27 +216,13 @@ namespace ASM_APDP.Controllers
                 return RedirectToAction("Login");
             }
 
-            // Fetch classes with null check
-            var allClasses = _classFacade?.GetAllClasses(); // Null check on _classFacade
+            var allClasses = _classFacade?.GetAllClasses();
             var classes = allClasses != null
                 ? allClasses.Where(c => c.UserID == userId.Value).ToList()
                 : new List<Class>();
 
-            // Fetch marks with null check and exception handling
-            List<Mark> marks = new List<Mark>();
-            if (_markFacade != null)
-            {
-                try
-                {
-                    marks = await _markFacade.GetAllMarksAsync() ?? new List<Mark>();
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"Error fetching marks: {ex.Message}");
-                }
-            }
+            var marks = _markFactory.GetAllMarks().ToList(); // Sử dụng IMarkFactory
 
-            // Join data safely
             var studentMarks = from c in classes
                                join m in marks
                                on c.ClassID equals m.ClassID into markGroup

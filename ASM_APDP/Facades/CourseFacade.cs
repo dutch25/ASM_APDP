@@ -1,5 +1,7 @@
-﻿using ASM_APDP.Models;
+﻿using ASM_APDP.Data;
+using ASM_APDP.Models;
 using ASM_APDP.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -7,41 +9,52 @@ namespace ASM_APDP.Facades
 {
     public class CourseFacade : ICourseFacade
     {
-        private readonly ICourseRepository _courseRepository;
+        private readonly DatabaseContext _context;
 
-        public CourseFacade(ICourseRepository courseRepository)
+        public CourseFacade(DatabaseContext context)
         {
-            _courseRepository = courseRepository;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public IEnumerable<Course> GetAllCourses()
         {
-            return _courseRepository.GetAllCourses();
+            return _context.Courses.ToList();
         }
 
         public Course GetCourseById(int id)
         {
-            return _courseRepository.GetCourseById(id);
+            return _context.Courses.Find(id);
         }
 
         public Course GetCourseByName(string courseName)
         {
-            return _courseRepository.GetCourseByName(courseName);
+            return _context.Courses.FirstOrDefault(c => c.CourseName == courseName);
         }
 
         public bool CreateCourse(Course courseEntity)
         {
-            return _courseRepository.CreateCourse(courseEntity);
+            _context.Courses.Add(courseEntity);
+            return _context.SaveChanges() > 0;
         }
 
         public async Task<bool> UpdateCourseAsync(Course courseEntity)
         {
-            return await _courseRepository.UpdateCourseAsync(courseEntity);
+            _context.Courses.Update(courseEntity);
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public bool DeleteCourse(int id)
         {
-            return _courseRepository.DeleteCourse(id);
+            var courseEntity = _context.Courses
+                .Include(c => c.Classes)         // Tải các Class liên quan
+                .ThenInclude(cl => cl.Marks)     // Tải các Mark liên quan
+                .FirstOrDefault(c => c.CourseID == id);
+
+            if (courseEntity == null) return false;
+
+            _context.Courses.Remove(courseEntity);
+            return _context.SaveChanges() > 0;
         }
     }
 }
+

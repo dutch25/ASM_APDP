@@ -1,7 +1,8 @@
 ﻿using ASM_APDP.Facades;
+using ASM_APDP.Factories; // Thay Facades bằng Factories cho Mark
 using ASM_APDP.Models;
+using ASM_APDP.Repositories;
 using ASM_APDP.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Linq;
@@ -12,16 +13,16 @@ namespace ASM_APDP.Controllers
     public class AdminController : Controller
     {
         private readonly IClassFacade _classFacade;
-        private readonly IUserFacade _userFacade;
+        private readonly IUserRepository _userRepository;
         private readonly ICourseFacade _courseFacade;
-        private readonly IMarkFacade _markFacade;
+        private readonly IMarkFactory _markFactory; // Thay IMarkFacade bằng IMarkFactory
 
-        public AdminController(IClassFacade classFacade, IUserFacade userFacade, ICourseFacade courseFacade, IMarkFacade markFacade)
+        public AdminController(IClassFacade classFacade, IUserRepository userRepository, ICourseFacade courseFacade, IMarkFactory markFactory)
         {
             _classFacade = classFacade ?? throw new ArgumentNullException(nameof(classFacade));
-            _userFacade = userFacade ?? throw new ArgumentNullException(nameof(userFacade));
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _courseFacade = courseFacade ?? throw new ArgumentNullException(nameof(courseFacade));
-            _markFacade = markFacade ?? throw new ArgumentNullException(nameof(markFacade));
+            _markFactory = markFactory ?? throw new ArgumentNullException(nameof(markFactory));
         }
 
         public IActionResult AdminDashboard()
@@ -33,7 +34,6 @@ namespace ASM_APDP.Controllers
         public IActionResult CreateClass()
         {
             var classes = _classFacade.GetAllClasses()?.ToList() ?? new List<Class>();
-            // Filter unique classes by ClassName
             var uniqueClasses = classes
                 .GroupBy(c => c.ClassName)
                 .Select(g => g.First())
@@ -41,7 +41,7 @@ namespace ASM_APDP.Controllers
 
             var viewModel = new CreateClassViewModel
             {
-                Classes = uniqueClasses // Use unique classes for display
+                Classes = uniqueClasses
             };
             return View(viewModel);
         }
@@ -52,7 +52,6 @@ namespace ASM_APDP.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Check if a class with the same name already exists
                 var existingClass = _classFacade.GetAllClasses()
                     ?.FirstOrDefault(c => c.ClassName.Equals(model.ClassName, StringComparison.OrdinalIgnoreCase));
                 if (existingClass != null)
@@ -101,7 +100,6 @@ namespace ASM_APDP.Controllers
                     return RedirectToAction("CreateClass");
                 }
 
-                // Check if the new name conflicts with another existing class
                 var duplicateClass = _classFacade.GetAllClasses()
                     ?.FirstOrDefault(c => c.ClassName.Equals(model.ClassName, StringComparison.OrdinalIgnoreCase) && c.ClassID != model.ClassId);
                 if (duplicateClass != null)
@@ -118,7 +116,7 @@ namespace ASM_APDP.Controllers
                 var isUpdated = _classFacade.UpdateClassAsync(existingClass).Result;
                 if (isUpdated)
                 {
-                    TempData["SuccessMessage"] = ".idxClass updated successfully.";
+                    TempData["SuccessMessage"] = "Class updated successfully.";
                     return RedirectToAction("CreateClass");
                 }
                 else
@@ -178,10 +176,9 @@ namespace ASM_APDP.Controllers
         public IActionResult AssignCoursesToStudents()
         {
             var classes = _classFacade.GetAllClasses()?.ToList() ?? new List<Class>();
-            var students = _userFacade.GetAllUsers()?.Where(u => u?.Role?.RoleName == "Student").ToList() ?? new List<User>();
+            var students = _userRepository.GetAllUsers()?.Where(u => u?.Role?.RoleName == "Student").ToList() ?? new List<User>();
             var courses = _courseFacade.GetAllCourses()?.ToList() ?? new List<Course>();
 
-            // Filter unique classes by ClassName
             var uniqueClasses = classes
                 .GroupBy(c => c.ClassName)
                 .Select(g => g.First())
@@ -190,12 +187,12 @@ namespace ASM_APDP.Controllers
             var viewModel = new AssignCoursesToStudentsViewModel
             {
                 Students = students,
-                Classes = uniqueClasses, // Use unique classes for the form
+                Classes = uniqueClasses,
                 Courses = courses
             };
 
-            ViewBag.Classes = classes; // Full list for table display
-            ViewBag.UniqueClasses = uniqueClasses; // Unique list for dropdowns
+            ViewBag.Classes = classes;
+            ViewBag.UniqueClasses = uniqueClasses;
             ViewBag.Students = students;
             ViewBag.Courses = courses;
             ViewBag.ClassesJson = System.Text.Json.JsonSerializer.Serialize(uniqueClasses.Select(c => new { c.ClassID, c.ClassName }));
@@ -217,7 +214,7 @@ namespace ASM_APDP.Controllers
                 return RedirectToAction("AssignCoursesToStudents");
             }
 
-            var student = _userFacade.GetUserById(model.StudentId);
+            var student = _userRepository.GetUserById(model.StudentId);
             var course = _courseFacade.GetCourseById(model.CourseId);
             var selectedClass = _classFacade.GetClassById(model.ClassId);
 
@@ -245,21 +242,12 @@ namespace ASM_APDP.Controllers
             bool isCreated = _classFacade.CreateClass(newClass);
             if (isCreated)
             {
-                // Lấy ClassID của bản ghi vừa tạo (giả sử CreateClass trả về ClassID hoặc bạn cần truy vấn lại)
                 var createdClass = _classFacade.GetAllClasses()
                     ?.FirstOrDefault(c => c.UserID == model.StudentId && c.CourseID == model.CourseId && c.ClassName == selectedClass.ClassName);
 
                 if (createdClass != null)
                 {
-                    // Tạo bản ghi Mark mặc định
-                    var newMark = new Mark
-                    {
-                        UserID = model.StudentId,
-                        CourseID = model.CourseId,
-                        ClassID = createdClass.ClassID,
-                        Grade = null // Điểm mặc định là null
-                    };
-                    _markFacade.CreateMark(newMark); // Gọi facade để tạo Mark
+                    _markFactory.CreateMark(model.StudentId, model.CourseId, createdClass.ClassID); // Sử dụng IMarkFactory
                 }
 
                 TempData["SuccessMessage"] = "Student assigned successfully.";
@@ -271,6 +259,7 @@ namespace ASM_APDP.Controllers
 
             return RedirectToAction("AssignCoursesToStudents");
         }
+
         // POST: DeleteStudentFromClass
         [HttpPost]
         public IActionResult DeleteStudentFromClass(int classId)
@@ -294,6 +283,7 @@ namespace ASM_APDP.Controllers
             }
             return RedirectToAction("AssignCoursesToStudents");
         }
+
         // GET: UpdateStudentInClass
         [HttpGet]
         public IActionResult UpdateStudentInClass(int classId)
@@ -317,12 +307,12 @@ namespace ASM_APDP.Controllers
                 StudentId = classEntity.UserID ?? 0,
                 ClassName = classEntity.ClassName ?? string.Empty,
                 CourseId = classEntity.CourseID ?? 0,
-                Students = _userFacade.GetAllUsers()?.Where(u => u?.Role?.RoleName == "Student").ToList() ?? new List<User>(),
-                Classes = uniqueClasses, // Use unique classes for dropdown
+                Students = _userRepository.GetAllUsers()?.Where(u => u?.Role?.RoleName == "Student").ToList() ?? new List<User>(),
+                Classes = uniqueClasses,
                 Courses = _courseFacade.GetAllCourses()?.ToList() ?? new List<Course>()
             };
 
-            ViewBag.Classes = classes; // Full list for table
+            ViewBag.Classes = classes;
             ViewBag.Students = model.Students;
             ViewBag.Courses = model.Courses;
 
@@ -341,16 +331,16 @@ namespace ASM_APDP.Controllers
                 return RedirectToAction("AssignCoursesToStudents");
             }
 
-            var classEntity = _classFacade.GetClassById(model.ClassId); // Original class to update
+            var classEntity = _classFacade.GetClassById(model.ClassId);
             if (classEntity == null)
             {
                 TempData["ErrorMessage"] = "Original class not found.";
                 return RedirectToAction("AssignCoursesToStudents");
             }
 
-            var student = _userFacade.GetUserById(model.StudentId);
+            var student = _userRepository.GetUserById(model.StudentId);
             var course = _courseFacade.GetCourseById(model.CourseId);
-            var newClass = _classFacade.GetClassById(NewClassId); // New class selected from dropdown
+            var newClass = _classFacade.GetClassById(NewClassId);
 
             if (student == null || course == null || newClass == null)
             {
@@ -358,10 +348,9 @@ namespace ASM_APDP.Controllers
                 return RedirectToAction("AssignCoursesToStudents");
             }
 
-            // Update the entity with new values
             classEntity.UserID = model.StudentId;
             classEntity.CourseID = model.CourseId;
-            classEntity.ClassName = newClass.ClassName; // Update ClassName based on NewClassId
+            classEntity.ClassName = newClass.ClassName;
 
             var isUpdated = _classFacade.UpdateClassAsync(classEntity).Result;
             if (isUpdated)
@@ -375,6 +364,7 @@ namespace ASM_APDP.Controllers
 
             return RedirectToAction("AssignCoursesToStudents");
         }
+
         public IActionResult CourseManagement()
         {
             var model = new AddCourseViewModel
